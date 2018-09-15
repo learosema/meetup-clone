@@ -7,7 +7,7 @@ info:
 servers:
   - url: http://localhost:8080/v1
 paths:
-  /groups/{location}:
+  /groups:
     get:
       summary: List all groups
       operationId: listGroups
@@ -15,13 +15,53 @@ paths:
         - groups
       parameters:
         - name: location
-          in: path
+          in: query
           required: false
           description: the location
           schema:
             type: string
+        - name: radius
+          in: query
+          required: false
+          default: 20km
+          description: location radius
+          schema:
+            type: string
+  /group/{id}:
     post:
-      summary: Create new Group
+      summary: Create new group
       operationId: createGroup
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: group id
+        schema:
+          type: string
       tags:
         - groups
+    put:
+      summary: Update group
+      operationId: updateGroup
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: group id
+        schema:
+          type: string
+      tags:
+        - groups
+    delete:
+      summary: Delete group
+      operationId: deleteGroup
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: group id
+        schema:
+          type: string
+      tags:
+        - groups
+    
