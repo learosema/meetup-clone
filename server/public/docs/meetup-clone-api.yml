@@ -1,0 +1,22 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Meetup Clone API
+  license:
+    name: MIT
+servers:
+  - url: http://localhost:8080/v1
+paths:
+  /groups/{location}:
+    get:
+      summary: List all groups
+      operationId: listGroups
+      tags:
+        - groups
+      parameters:
+        - name: location
+          in: path
+          required: false
+          description: the location
+          schema:
+            type: string
