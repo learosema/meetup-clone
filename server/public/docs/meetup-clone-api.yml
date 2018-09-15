@@ -20,3 +20,8 @@ paths:
           description: the location
           schema:
             type: string
+    post:
+      summary: Create new Group
+      operationId: createGroup
+      tags:
+        - groups
