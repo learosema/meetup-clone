@@ -7,6 +7,38 @@ info:
 servers:
   - url: http://localhost:8080/v1
 paths:
+  /users:
+    get:
+      summary: List all users
+      tags:
+        - users
+      parameters:
+        - name: location
+          in: query
+          required: false
+          description: the location
+          schema:
+            type: string
+        - name: radius
+          in: query
+          required: false
+          default: 20km
+          description: location radius
+          schema:
+            type: string
+  /user/{id}:
+    post:
+      summary: Create new user
+      tags:
+        - users
+    put:
+      summary: Update user information
+      tags:
+        - users
+    delete:
+      summary: Delete user
+      tags:
+        - users
   /groups:
     get:
       summary: List all groups
@@ -43,25 +75,45 @@ paths:
     put:
       summary: Update group
       operationId: updateGroup
-    parameters:
-      - name: id
-        in: path
-        required: true
-        description: group id
-        schema:
-          type: string
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: group id
+          schema:
+            type: string
       tags:
         - groups
     delete:
       summary: Delete group
       operationId: deleteGroup
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: group id
-        schema:
-          type: string
+        - name: id
+          in: path
+          required: true
+          description: group id
+          schema:
+            type: string
       tags:
         - groups
-    
+  /group/{id}/members:
+    get:
+      summary: Get group members
+      tags:
+        - group-members
+    post:
+      summary: Add group member
+      tags:
+        - group-members
+      parameters:
+        - name: userid
+          in: query
+          required: true
+          description: Add user to group
+          schema:
+            type: string
+  /group/{id}/events:
+    get:
+      summary: Get events
+      tags:
+        - group-events
