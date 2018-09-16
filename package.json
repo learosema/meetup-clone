@@ -1,0 +1,23 @@
+{
+  "name": "meetup-clone",
+  "version": "1.0.0",
+  "description": "A meetup clone",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/terabaud/meetup-clone.git"
+  },
+  "keywords": [
+    "react",
+    "php"
+  ],
+  "author": "Lea Rosema",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/terabaud/meetup-clone/issues"
+  },
+  "homepage": "https://github.com/terabaud/meetup-clone#readme"
+}
