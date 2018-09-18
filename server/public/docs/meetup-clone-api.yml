@@ -26,11 +26,12 @@ paths:
           description: location radius
           schema:
             type: string
-  /user/{id}:
+  /user:
     post:
       summary: Create new user
       tags:
         - users
+  /user/{id}:
     put:
       summary: Update user information
       tags:
@@ -59,7 +60,7 @@ paths:
           description: location radius
           schema:
             type: string
-  /group/{id}:
+  /group:
     post:
       summary: Create new group
       operationId: createGroup
@@ -72,6 +73,7 @@ paths:
           type: string
       tags:
         - groups
+  /group/{id}:
     put:
       summary: Update group
       operationId: updateGroup
@@ -101,6 +103,7 @@ paths:
       summary: Get group members
       tags:
         - group-members
+  /group/{id}/member:
     post:
       summary: Add group member
       tags:
@@ -112,8 +115,81 @@ paths:
           description: Add user to group
           schema:
             type: string
+  /group/{id}/member/{mid}:
+    put:
+      summary: Update member
+      tags:
+        - group-members
+    delete:
+      summary: Delete member
   /group/{id}/events:
     get:
       summary: Get events
       tags:
         - group-events
+components:
+  schemas:
+    User:
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        password:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        active:
+          type: boolean
+    Users:
+      type: array
+      items:
+        $ref: "#/components/schemas/User"
+    Group:
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+    Groups:
+      type: array
+      items:
+        $ref: '#/components/schemas/Group'
+    Event:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        address:
+          type: string
+        lat:
+          type: double
+        lon:
+          type: double
+        date:
+          type: dateTime
+    Events:
+      type: array
+      items:
+        $ref: '#/components/schemas/Event'          
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int64
+        message:
+          type: string
