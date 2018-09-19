@@ -33,6 +33,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Users'
+  /user/{id}:
+    get:
+      summary: Get user information
+      tags: 
+        - users
+      parameters:
+        - name: id
+          description: the user id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: the user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /user/{id}/picture:
+    get:
+      summary: Get user picture
+      tags:
+        - users
+      parameters:
+        - name: id
+          description: the user id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: the user picture
+  put:
+      summary: Upload user picture
+      tags:
+        - users
+      parameters:
+        - name: id
+          description: the user id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: the user picture
   /user:
     post:
       summary: Create new user
@@ -218,6 +266,8 @@ components:
           type: string
         active:
           type: boolean
+        role:
+          type: string
     Users:
       type: array
       items:
