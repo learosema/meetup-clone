@@ -5,11 +5,11 @@ info:
   license:
     name: MIT
 servers:
-  - url: http://localhost:8080/v1
+  - url: http://localhost:8080/
 paths:
   /users:
     get:
-      summary: List all users
+      summary: List users
       tags:
         - users
       parameters:
@@ -26,23 +26,73 @@ paths:
           description: location radius
           schema:
             type: string
+      responses:
+        '200':
+          description: An array of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
   /user:
     post:
       summary: Create new user
+      operationId: createUser
       tags:
         - users
-  /user/{id}:
+      requestBody:
+        description: User to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: OK
     put:
+      security:
+        - basicAuth: []
       summary: Update user information
       tags:
         - users
+      requestBody:
+        description: User to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: OK
     delete:
+      security:
+        - basicAuth: []
       summary: Delete user
       tags:
         - users
+      responses:
+        '200':
+          description: OK
+  /validation/{vid}:
+    /get:
+      tags:
+        - user-validation
+      parameters:
+        - name: vid
+          in: path
+          required: true
+          description: validation id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '403': 
+          description: Forbidden
   /groups:
     get:
-      summary: List all groups
+      summary: List groups
       operationId: listGroups
       tags:
         - groups
@@ -60,21 +110,32 @@ paths:
           description: location radius
           schema:
             type: string
+      responses:
+        '200':
+          description: An array of groups
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Groups'
   /group:
     post:
+      security:
+        - basicAuth: []
       summary: Create new group
       operationId: createGroup
-      parameters:
-      - name: id
-        in: path
+      requestBody:
+        description: Group to create
         required: true
-        description: group id
-        schema:
-          type: string
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Group'
       tags:
         - groups
   /group/{id}:
     put:
+      security:
+        - basicAuth: []
       summary: Update group
       operationId: updateGroup
       parameters:
@@ -87,6 +148,8 @@ paths:
       tags:
         - groups
     delete:
+      security:
+        - basicAuth: []
       summary: Delete group
       operationId: deleteGroup
       parameters:
@@ -105,29 +168,41 @@ paths:
         - group-members
   /group/{id}/member:
     post:
-      summary: Add group member
-      tags:
-        - group-members
-      parameters:
-        - name: userid
-          in: query
-          required: true
-          description: Add user to group
-          schema:
-            type: string
-  /group/{id}/member/{mid}:
-    put:
-      summary: Update member
+      security:
+        - basicAuth: []
+      summary: Add group member / join group
       tags:
         - group-members
     delete:
-      summary: Delete member
+      security:
+        - basicAuth: []
+      summary: Delete member / leave group
+      tags:
+        - group-members
   /group/{id}/events:
     get:
       summary: Get events
       tags:
         - group-events
+    post:
+      security:
+        - basicAuth: []
+      summary: Submit RSVP
+      tags: 
+        - group-events
+      parameters:
+        - name: rsvp
+          in: query
+          description: yes or no
+          required: true
+          schema:
+            type: string
+            example: yes
 components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
   schemas:
     User:
       required:
