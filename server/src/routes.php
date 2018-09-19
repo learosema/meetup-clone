@@ -3,33 +3,12 @@
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-// Auth Middleware (todo: use tuupola/slim-basic-auth)
-$auth = function ($request, $response, $next) {
-  $response = $response->withHeader('WWW-Authenticate','Basic realm="protected"');
-  $authorization = $request->getHeaderLine('Authorization');
-  $authenticated = false;
-  if ($authorization) {
-    list ($authType, $code) = explode(' ', $authorization);
-    if ($authType === "Basic") {
-      // TODO: get from DB
-      $authenticated = base64_decode($code) === 'lea:lea'; 
-    }
-  }
-  if (! $authenticated) {
-    $response = $response->withStatus(401);
-    $response->getBody()->write('Access denied.');
-    return $response;
-  }
-  $response = $next($request, $response);
-  return $response;
-};
+$auth = new \Middleware\Authentication($app->getContainer());
 
 // Route
 $app->get('/', function(Request $request, Response $response) {
   return $response->withStatus(301)->withHeader('Location', '/docs/');
 });
-
-
 
 $app->get('/users', function(Request $request, Response $response) {
   $query = $this->db->prepare('SELECT `id`, `name`, `role` FROM `users`');
@@ -40,8 +19,12 @@ $app->get('/users', function(Request $request, Response $response) {
 
 $app->get('/user/{id}', function(Request $request, Response $response, $args) {
   $id = $args['id'];
-  return $response->withJson(['response' => "Hello $id!"]);
-});
-
-
+  $query = $this->db->prepare('SELECT `id`, `name`, `role` FROM `users` WHERE id = :id');
+  $query->execute(['id' => $id]);
+  $row = $query->fetch();
+  if (! $row) {
+    return $response->withStatus(404)->write('404 Not Found');
+  }
+  return $response->withJson($row);
+})->add($auth);
 
