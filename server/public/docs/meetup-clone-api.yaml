@@ -290,6 +290,8 @@ components:
       properties:
         id:
           type: string
+        group_id:
+          type: string
         name:
           type: string
         description:

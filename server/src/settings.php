@@ -4,7 +4,7 @@ return [
         'displayErrorDetails' => true, // set to false in production
         'addContentLengthHeader' => false, // Allow the web server to send the content-length header
         'db' => [
-            'connection' => 'sqlite:' . __DIR__ .'/../db/database.sqlite',
+            'connection' => 'sqlite:' . __DIR__ .'/../db/meetup-clone.db',
             'user' => NULL,
             'password' => NULL
         ],

@@ -29,8 +29,13 @@ $app->get('/', function(Request $request, Response $response) {
   return $response->withStatus(301)->withHeader('Location', '/docs/');
 });
 
+
+
 $app->get('/users', function(Request $request, Response $response) {
-  return $response->withJson(['response' => 'Hello!']);
+  $query = $this->db->prepare('SELECT `id`, `name`, `role` FROM `users`');
+  $query->execute();
+  $rows = $query->fetchAll();
+  return $response->withJson($rows);
 });
 
 $app->get('/user/{id}', function(Request $request, Response $response, $args) {
