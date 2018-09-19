@@ -26,7 +26,7 @@ class Authentication {
     }
     if (! $authenticated) {
       $response = $response->withStatus(401);
-      // $response->getBody()->write('Access denied.');
+      $response->getBody()->write('Access denied.');
       return $response;
     }
     $response = $next($request, $response);
