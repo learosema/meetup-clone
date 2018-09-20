@@ -80,6 +80,6 @@ $app->delete('/user', function(Request $request, Response $response, $args) {
   }
 })->add($auth);
 
-$app->get('groups', function(Request $request, Response $response, $args) {
+$app->get('/groups', function(Request $request, Response $response, $args) {
 
 });
