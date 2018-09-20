@@ -71,7 +71,7 @@ $app->post('/user', function(Request $request, Response $response, $args) {
 
 // DELETE /user
 // Delete account
-$app->delete('/user', function() {
+$app->delete('/user', function(Request $request, Response $response, $args) {
   try {
     $query = $this->db->prepare('DELETE FROM users WHERE `id` = :id');
     $query->execute([':id' => $this->identity->id]);
@@ -79,3 +79,7 @@ $app->delete('/user', function() {
     return $response->withStatus(404)->write('Not found');
   }
 })->add($auth);
+
+$app->get('groups', function(Request $request, Response $response, $args) {
+
+});
