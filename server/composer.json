@@ -21,6 +21,7 @@
     "autoload-dev": {
         "psr-4": {
             "Middleware\\": "src/middleware", 
+            "Services\\": "src/services",
             "Models\\": "src/models",
             "Tests\\": "tests/"
         }
