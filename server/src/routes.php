@@ -81,5 +81,37 @@ $app->delete('/user', function(Request $request, Response $response, $args) {
 })->add($auth);
 
 $app->get('/groups', function(Request $request, Response $response, $args) {
+  try {
+    $query = $this->db->prepare('SELECT `id`, `name`, `description` FROM `groups`');
+  } catch (PDOException $ex) {
+    return $response->withStatus(500)->write($ex->message);
+  }
+});
 
+$app->post('/group', function(Request $request, Response $response, $args) {
+  try {
+    $query = $this->db->prepare('INSERT INTO `groups` (`id`, `name`, `description`) VALUES (:id, :name, :description)');
+    $group = $request->getParsedBody();
+    // TODO: validation. add creator of group as member and stuff.
+    if (!isset($group['id']) ||
+      !isset($group['name']) ||
+      !isset($group['description'])) {      
+      return $response->withStatus(400)->write('Bad Request');
+    }
+    $query->execute([
+      ':id' => $group['id'],
+      ':name' => $group['name'],
+      ':description' => $group['description']
+    ]);
+  } catch (PDOEXception $ex) {
+    return $response->withStatus(500)->write($ex->message);
+  }
+})->add($auth);
+
+$app->put('/group', function (Request $request, Response $response, $args) {
+  return $response->withStatus(500)->write('not implemented yet.');
+});
+
+$app->delete('/group/{id}', function (Request $request, Response $response, $args) {
+  return $response->withStatus(500)->write('not implemented yet.');
 });
