@@ -103,6 +103,12 @@ $app->post('/group', function(Request $request, Response $response, $args) {
       ':name' => $group['name'],
       ':description' => $group['description']
     ]);
+    $addMemberQuery = $this->db->prepare('INSERT INTO `group_members` (`group_id`, `user_id`, `role`) VALUES (:group_id, :user_id, :role)');
+    $addMemberQuery->execute([
+      ':group_id' => $group['id'],
+      ':user_id' => $this->identity->id,
+      'role' => 'admin'
+    ]);
   } catch (PDOEXception $ex) {
     return $response->withStatus(500)->write($ex->message);
   }
