@@ -14,3 +14,7 @@ $container['db'] = function ($c) {
 $container['userService'] = function ($c) {
   return new \Services\UserService($c->db);
 };
+
+$container['groupService'] = function ($c) {
+  return new \Services\GroupService($c->db);
+};
