@@ -8,6 +8,6 @@ return [
             'user' => NULL,
             'password' => NULL
         ],
-        'cors' => ['https://terabaud.de', 'https://terabaud.github.io', 'http://localhost:8080/', 'http://localhost:8081/']
+        'cors' => ['https://terabaud.de', 'https://terabaud.github.io', 'http://localhost:8080/', 'http://localhost:8081/', 'http://localhost:1234/']
     ],
 ];
