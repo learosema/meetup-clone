@@ -62,14 +62,18 @@ $app->delete('/user', function(Request $request, Response $response, $args) {
   }
 })->add($auth);
 
+// GET /groups
+// List all groups
 $app->get('/groups', function(Request $request, Response $response, $args) {
   try {
-    $query = $this->db->prepare('SELECT `id`, `name`, `description` FROM `groups`');
-  } catch (PDOException $ex) {
+    return $response->withJson($this->groupService->getGroups());
+  } catch (Exception $ex) {
     return $response->withStatus(500)->write($ex->message);
   }
 });
 
+// POST /groups
+// Create group
 $app->post('/group', function(Request $request, Response $response, $args) {
   try {
     $query = $this->db->prepare('INSERT INTO `groups` (`id`, `name`, `description`) VALUES (:id, :name, :description)');
@@ -80,17 +84,7 @@ $app->post('/group', function(Request $request, Response $response, $args) {
       !isset($group['description'])) {      
       return $response->withStatus(400)->write('Bad Request');
     }
-    $query->execute([
-      ':id' => $group['id'],
-      ':name' => $group['name'],
-      ':description' => $group['description']
-    ]);
-    $addMemberQuery = $this->db->prepare('INSERT INTO `group_members` (`group_id`, `user_id`, `role`) VALUES (:group_id, :user_id, :role)');
-    $addMemberQuery->execute([
-      ':group_id' => $group['id'],
-      ':user_id' => $this->identity->id,
-      'role' => 'admin'
-    ]);
+    $this->groupService->createGroup($group);
   } catch (PDOEXception $ex) {
     return $response->withStatus(500)->write($ex->message);
   }
