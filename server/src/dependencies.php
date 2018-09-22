@@ -3,7 +3,6 @@
 
 $container = $app->getContainer();
 
-
 $container['db'] = function ($c) {
   $db_config = $c->get('settings')['db'];
   $db = new PDO($db_config['connection'], $db_config['user'], $db_config['password']);
@@ -12,8 +11,6 @@ $container['db'] = function ($c) {
   return $db;
 };
 
-
-/*
-$container['user'] = function ($c) {
-  return new UserService($db);
-}; */
+$container['userService'] = function ($c) {
+  return new \Services\UserService($c->db);
+};

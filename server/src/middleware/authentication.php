@@ -5,16 +5,12 @@ namespace Middleware;
 class Authentication {
 
   public function __construct($container) {
-    $this->db = $container['db'];
+    $this->userService = $container->userService;
     $this->container = $container;
   }
 
   public function authenticate($id, $password) {
-    // TODO: Move authentication out into a user service class
-    $query = $this->db->prepare('SELECT COUNT(*) AS count FROM `users` WHERE id = :id AND password = :password');
-    $query->execute([':id' => $id, ':password' => $password]);
-    $row = $query->fetch();
-    return ($row['count'] == 1);
+    return ($this->userService->validate($id, $password));
   }
 
   public function __invoke($request, $response, $next) {
@@ -34,7 +30,6 @@ class Authentication {
       $response->getBody()->write('Access denied.');
       return $response;
     }
-    
     $response = $next($request, $response);
     return $response;
   }

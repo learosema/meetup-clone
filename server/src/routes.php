@@ -19,24 +19,18 @@ $app->get('/auth', function(Request $request, Response $response) {
 
 // GET /users
 // Get all users
-$app->get('/users', function(Request $request, Response $response) {
-  $query = $this->db->prepare('SELECT `id`, `name`, `role` FROM `users`');
-  $query->execute();
-  $rows = $query->fetchAll();
-  return $response->withJson($rows);
+$app->get('/users', function(Request $request, Response $response) {  
+  return $response->withJson($this->userService->getUsers());
 });
 
 // GET /user/{id}
 // Get User By ID
 $app->get('/user/{id}', function(Request $request, Response $response, $args) {
-  $id = $args['id'];
-  $query = $this->db->prepare('SELECT `id`, `name`, `role` FROM `users` WHERE id = :id');
-  $query->execute([':id' => $id]);
-  $row = $query->fetch();
+  $user = $this->userService->getUserById($args['id']);
   if (! $row) {
     return $response->withStatus(404)->write('404 Not Found');
   }
-  return $response->withJson($row);
+  return $response->withJson($user);
 })->add($auth);
 
 // POST /user
@@ -51,32 +45,20 @@ $app->post('/user', function(Request $request, Response $response, $args) {
       !isset($user['name'])) {
     return $response->withStatus(400)->write('Bad Request');
   }
-  try {
-    $query = $this->db->prepare('INSERT INTO users (`id`, `name`, `password`, `email`) VALUES (:id, :name, :password, :email)');
-    $query->execute([
-      ':id' => $user['id'],
-      ':name' => $user['name'],
-      ':password' => $user['password'],
-      ':email' => $user['email']
-    ]);
-    return $response->withJson([
-      'id' => $user['id'],
-      'name' => $user['name'],
-      'email' => $user['email']
-    ]);
-  } catch (PDOException $ex) {
-    return $response->withStatus(409)->write('User already exists');
+  if ($this->userService->addUser($user)) {
+    return $response->withJson(['response' => 'user created.']);
+  } else {
+    return $response->withStatus(409)->write('User already exists.');
   }
 });
 
 // DELETE /user
 // Delete account
 $app->delete('/user', function(Request $request, Response $response, $args) {
-  try {
-    $query = $this->db->prepare('DELETE FROM users WHERE `id` = :id');
-    $query->execute([':id' => $this->identity->id]);
-  } catch (PDOException $ex) {
-    return $response->withStatus(404)->write('Not found');
+  if ($this->userService->deleteUser($this->identity->id)) {
+    return $response->withJson(['response' => 'user deleted.']);
+  } else {
+    return $response->withStatus(404)->withJson(['response' => 'User not found.']);
   }
 })->add($auth);
 
