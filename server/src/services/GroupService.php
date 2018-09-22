@@ -10,7 +10,7 @@ class GroupService {
 
   public function getGroups() {
     try {
-      $query = $db->prepare('SELECT * FROM `groups`');
+      $query = $this->db->prepare('SELECT id, name, description FROM groups');
       $query->execute();
       return $query->fetchAll();
     } catch (PDOException $ex) {
@@ -18,44 +18,96 @@ class GroupService {
     }
   }
 
-  public function getGroupById($id) {
+  public function getGroupById($groupId) {
     try {
-      $query = $db->prepare('SELECT * FROM `groups` WHERE `id` = :id');
-      $query->execute([':id' => $id]);
+      $query = $this->db->prepare('SELECT id, name, description FROM groups WHERE id = :id');
+      $query->execute([':id' => $groupId]);
       return $query->fetchAll();
     } catch (PDOException $ex) {
       return FALSE;
     }
   }
 
+  public function getGroupMembers($groupId) {
+    $query = $this->db->prepare('SELECT users.id, users.name, users.email FROM users LEFT JOIN group_members ON users.id = group_members.user_id WHERE group_members.group_id = :group_id and users.active = 1');
+    $query->execute([
+      ':group_id' => $groupId
+    ]);
+    return $query->fetchAll();
+  }
+
   public function createGroup($group) {
+    $query = $this->db->prepare('INSERT INTO groups (id, name, description) VALUES (:id, :name, :description)');
+    $query->execute([
+      ':id' => $group['id'],
+      ':name' => $group['name'],
+      ':description' => $group['description']
+    ]);
+  }
+
+  public function updateGroup($group) {
     try {
-      $query = $this->db->prepare('INSERT INTO `groups` (`id`, `name`, `description`) VALUES (:id, :name, :description)');
-      $query->execute([
-        ':id' => $group['id'],
-        ':name' => $group['name'],
-        ':description' => $group['description']
-      ]);
-    } catch (PDOEXception $ex) {
-      return $response->withStatus(500)->write($ex->message);
+      $updateQuery = [];
+      $queryParams = [];
+      foreach (['name', 'description'] as $k) {
+        if ($group[$k]) {
+          array_push($updateQuery, "`$k` = :$k");
+          $queryParams[":$k"] = $user[$k];
+        }
+      }
+      if (count($queryParams) > 0) {
+        $query = $this->db->prepare('UPDATE groups SET '. implode(", ", $updateQuery).' WHERE `id` = :id');
+        $query->execute($queryParams);
+      }
+      return ($query->rowCount() == 1);
+    } catch (PDOException $ex) {
+      return false;
     }
   }
 
   public function deleteGroup($groupId) {
-    throw new Exception("Not Implemeneted Yet");
+    $query = $this->db->prepare('DELETE FROM groups WHERE id = :id');
+    $query->execute([
+      ':id' => $groupId
+    ]);
+    if ($query->rowCount() !== 1) {
+      return FALSE;
+    }
+    $query = $this->db->prepare('DELETE FROM group_members WHERE group_id = :id');
+    $query->execute([
+      ':id' => $groupId
+    ]);
   }
 
   public function addMember($groupId, $userId, $role = 'member') {
-    $query = $this->db->prepare('INSERT INTO `group_members` (`group_id`, `user_id`, `role`) VALUES (:group_id, :user_id, :role)');
+    $query = $this->db->prepare('INSERT INTO group_members (group_id, user_id, role) VALUES (:group_id, :user_id, :role)');
     $query->execute([
       ':group_id' => $groupId,
       ':user_id' => $userId,
       ':role' => $role
     ]);
-    return ($query->rowCount() == 1);
+    return ($query->rowCount() === 1);
   }
 
-  public function deleteMember() {
-    throw new Exception("Not Implemeneted Yet");
+  public function deleteMember($groupId, $userId) {
+    $query = $this->db->prepare('DELETE FROM group_members WHERE group_id = :group_id AND user_id = :user_id');
+    $query->execute([
+      ':group_id' => $groupId,
+      ':user_id' => $userId
+    ]);
+    return ($query->rowCount() === 1);
+  }
+
+  public function addGroupEvent($groupEvent) {
+    // $query = $this->db->prepare('INSERT INTO group_events (id, group_id, name, description, location, address, lat, lon, date) VALUES ()');
+    throw new Exception("not implemented yet.");
+  }
+
+  public function deleteGroupEvent($groupEvent) {
+    throw new Exception("not implemented yet.");
+  }
+
+  public function updateGroupEvent($groupEvent) {
+    throw new Exception("not implemented yet.");
   }
 }
