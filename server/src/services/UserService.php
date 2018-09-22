@@ -10,21 +10,21 @@ class UserService {
 
   public function validate($id, $password) {
     // TODO: encrypt passwords
-    $query = $this->db->prepare('SELECT COUNT(*) AS count FROM `users` WHERE id = :id AND password = :password');
+    $query = $this->db->prepare('SELECT COUNT(*) AS count FROM users WHERE id = :id AND password = :password AND active = 1');
     $query->execute([':id' => $id, ':password' => $password]);
     $row = $query->fetch();
     return ($row['count'] == 1);
   }
 
   public function getUsers() {
-    $query = $this->db->prepare('SELECT `id`, `name`, `role` FROM `users`');
+    $query = $this->db->prepare('SELECT id, name, role FROM users WHERE active = 1');
     $query->execute();
     $rows = $query->fetchAll();
     return $rows;
   }
 
   public function getUserById($id) {
-    $query = $this->db->prepare('SELECT `id`, `name`, `role` FROM `users` WHERE id = :id');
+    $query = $this->db->prepare('SELECT id, name, role FROM users WHERE id = :id AND active = 1');
     $query->execute([':id' => $id]);
     $row = $query->fetch();
     if (! $row) {
@@ -35,12 +35,13 @@ class UserService {
 
   public function addUser($user) {
     try {
-      $query = $this->db->prepare('INSERT INTO users (`id`, `name`, `password`, `email`) VALUES (:id, :name, :password, :email)');
+      $query = $this->db->prepare('INSERT INTO users (id, name, password, email, role) VALUES (:id, :name, :password, :email, :role)');
       $query->execute([
         ':id' => $user['id'],
         ':name' => $user['name'],
         ':password' => $user['password'],
-        ':email' => $user['email']
+        ':email' => $user['email'],
+        ':role' => $user['role']
       ]);
       return true;
     } catch (PDOException $ex) {
@@ -52,7 +53,7 @@ class UserService {
     try {
       $updateQuery = [];
       $queryParams = [];
-      foreach (['name', 'password', 'email'] as $k) {
+      foreach (['name', 'password', 'email', 'role'] as $k) {
         if ($user[$k]) {
           array_push($updateQuery, "`$k` = :$k");
           $queryParams[":$k"] = $user[$k];
