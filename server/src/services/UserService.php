@@ -52,18 +52,24 @@ class UserService {
     }
   }
 
+  public function activateUser($userId) {
+    $query = $this->db->prepare('UPDATE users SET active = 1 WHERE id = :id');
+    $query->execute([':id' => $userId]);
+    return ($query->rowCount() === 1);
+  }
+
   public function updateUser($user) {
     try {
       $updateQuery = [];
       $queryParams = [':id' => $user['id']];
       foreach (['name', 'password', 'email', 'role'] as $k) {
-        if ($user[$k]) {
+        if (array_key_exists($k, $user)) {
           array_push($updateQuery, "`$k` = :$k");
           $queryParams[":$k"] = $user[$k];
         }
       }
       if (count($queryParams) > 0) {
-        $query = $this->db->prepare('UPDATE users SET '. implode(", ", $updateQuery).' WHERE `id` = :id');
+        $query = $this->db->prepare('UPDATE users SET '. implode(", ", $updateQuery).' WHERE id = :id');
         $query->execute($queryParams);
       }
       return ($query->rowCount() == 1);
