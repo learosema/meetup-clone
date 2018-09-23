@@ -5,6 +5,12 @@ use Slim\Http\Response;
 
 $auth = new \Middleware\Authentication($app->getContainer());
 
+
+// OPTIONS Preflight Request for CORS
+$app->options('/{routes:.+}', function ($request, $response, $args) {
+  return $response;
+});
+
 // GET /
 // redirects to swagger OpenAPI documentation
 $app->get('/', function(Request $request, Response $response) {
@@ -96,4 +102,11 @@ $app->put('/group', function (Request $request, Response $response, $args) {
 
 $app->delete('/group/{id}', function (Request $request, Response $response, $args) {
   return $response->withStatus(500)->write('not implemented yet.');
+});
+
+// Catch-all route to serve a 404 Not Found page if none of the routes match
+// NOTE: make sure this route is defined last
+$app->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function($req, $res) {
+  $handler = $this->notFoundHandler; // handle using the default Slim page not found handler
+  return $handler($req, $res);
 });
