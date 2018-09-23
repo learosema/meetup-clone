@@ -105,7 +105,7 @@ class GroupService {
   }
 
   public function addMember($groupId, $userId, $role = 'member') {
-    if (isUserInGroup($groupId, $userId)) {
+    if ($this->isUserInGroup($groupId, $userId)) {
       return FALSE;
     }
     $query = $this->db->prepare('INSERT INTO group_members (group_id, user_id, role) VALUES (:group_id, :user_id, :role)');
