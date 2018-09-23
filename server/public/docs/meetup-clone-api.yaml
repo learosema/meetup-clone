@@ -52,6 +52,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+    delete:
+      security:
+        - basicAuth: []
+      summary: Delete user
+      tags:
+        - users
+      parameters:
+        - name: id
+          description: the user id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
   /user/{id}/picture:
     get:
       summary: Get user picture
@@ -67,7 +83,7 @@ paths:
       responses:
         '200':
           description: the user picture
-  put:
+    put:
       summary: Upload user picture
       tags:
         - users
@@ -107,18 +123,12 @@ paths:
         description: User to update
         required: true
         content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
           application/json:
             schema:
               $ref: '#/components/schemas/User'
-      responses:
-        '200':
-          description: OK
-    delete:
-      security:
-        - basicAuth: []
-      summary: Delete user
-      tags:
-        - users
       responses:
         '200':
           description: OK
@@ -232,20 +242,40 @@ paths:
       summary: Get events
       tags:
         - group-events
-    post:
-      security:
-        - basicAuth: []
-      summary: Submit RSVP
-      tags: 
-        - group-events
       parameters:
-        - name: rsvp
-          in: query
-          description: yes or no
+        - name: id
+          description: the group id
+          in: path
           required: true
           schema:
             type: string
-            example: yes
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Events'
+    post:
+      security:
+        - basicAuth: []
+      summary: Create new event
+      tags: 
+        - group-events
+      parameters:
+        - name: id
+          description: the group id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Event'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
 components:
   securitySchemes:
     basicAuth:
