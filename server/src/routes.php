@@ -158,6 +158,8 @@ $app->delete('/group/{id}', function (Request $request, Response $response, $arg
   return $response->withJson(['response' => 'User deleted.']);
 })->add($auth);
 
+// GET /group/{id}/members
+// Get group members
 $app->get('/group/{id}/members', function (Request $request, Response $response, $args) {
   $groupId = $args['id'];
   $group = $this->groupService->getGroupById($groupId);
@@ -167,6 +169,8 @@ $app->get('/group/{id}/members', function (Request $request, Response $response,
   return $response->withJson($this->groupService->getGroupMembers($groupId));
 });
 
+// POST /group/{id}/members
+// Add currently logged in user to group
 $app->post('/group/{id}/members', function (Request $request, Response $response, $args) {
   $groupId = $args['id'];
   $group = $this->groupService->getGroupById($groupId);
@@ -177,7 +181,21 @@ $app->post('/group/{id}/members', function (Request $request, Response $response
   if ($this->groupService->addMember($groupId, $userId)) {
     return $response->withJson(['response' => "User $userId added to group $groupId."]);
   } else {
-    return $response->withJson(['response' => "User $userId already in group $groupId."]);
+    return $response->withStatus(409)->withJson(['response' => "User $userId already in group $groupId."]);
+  }
+})->add($auth);
+
+$app->delete('/group/{id}/members', function (Request $request, Response $response, $args) {
+  $groupId = $args['id'];
+  $group = $this->groupService->getGroupById($groupId);
+  if (! $group) {
+    return $response->withStatus(404)->withJson(['response' => 'Group not found.']);
+  }
+  $userId = $this->identity->id;
+  if ($this->groupService->deleteMember($groupId, $userId)) {
+    return $response->withJson(['response' => "User $userId deleted from group $groupId."]);
+  } else {
+    return $response->withStatus(404)->withJson(['response' => "User $userId not in group $groupId."]);
   }
 })->add($auth);
 
