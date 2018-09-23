@@ -49,13 +49,13 @@ $app->post('/user', function(Request $request, Response $response, $args) {
       !isset($user['password']) ||
       !isset($user['email']) ||
       !isset($user['name'])) {
-    return $response->withStatus(400)->write('Bad Request');
+    return $response->withStatus(400)->withJson(['response' => 'Bad Request.']);
   }
   unset($user['role']);
   if ($this->userService->addUser($user)) {
     return $response->withJson(['response' => 'user created.']);
   } else {
-    return $response->withStatus(409)->write('User already exists.');
+    return $response->withStatus(409)->withJson(['response' => 'User already exists.']);
   }
 });
 
@@ -108,7 +108,7 @@ $app->post('/group', function(Request $request, Response $response, $args) {
     if (!isset($group['id']) ||
       !isset($group['name']) ||
       !isset($group['description'])) {      
-      return $response->withStatus(400)->write('Bad Request');
+      return $response->withStatus(400)->withJson(['response' => 'Bad Request.']);
     }
     $this->groupService->createGroup($group);
     $this->groupService->addMember($group['id'], $this->identity->id, 'admin');
@@ -123,26 +123,62 @@ $app->put('/group/{id}', function (Request $request, Response $response, $args) 
   $groupId = $args['id'];
   $userRole = $this->groupService->getGroupMemberRole($groupId, $this->identity->id);
   if ($userRole === FALSE) {
-    return $response->withStatus(403)->write('Not in group or group does not exist.');
+    return $response->withStatus(403)->withJson(['response' => 'Not in group or group does not exist.']);
   }
   if ($userRole !== "admin") {
-    return $response->withStatus(403)->write('Insufficient permissions to delete the group');
+    return $response->withStatus(403)->withJson(['response' => 'Insufficient permissions to delete the group.']);
   }
-
-  return $response->withStatus(500)->write('not implemented yet.');
+  $group = $request->getParsedBody();
+  $group['id'] = $groupId;
+  if ($this->updateGroup($group)) {
+    return $response->withJson(['response' => 'Group updated.']);
+  } else {
+    return $response->withStatus(404)->withJson(['response' => 'Group not found.']);
+  }
 })->add($auth);
 
 // DELETE /group/{id}
+// Delete group
 $app->delete('/group/{id}', function (Request $request, Response $response, $args) {
   $groupId = $args['id'];
-  $userRole = $this->groupService->getGroupMemberRole($groupId, $this->identity->id);
+  if ($this->identity->role === "admin") {
+    $userRole = "admin";
+  } else {
+    $userRole = $this->groupService->getGroupMemberRole($groupId, $this->identity->id);
+  }
   if ($userRole === FALSE) {
-    return $response->withStatus(403)->write('Not in group or group does not exist.');
+    return $response->withStatus(403)->withJson(['response' => 'Not in group or group does not exist.']);
   }
   if ($userRole !== "admin") {
-    return $response->withStatus(403)->write('Insufficient permissions to delete the group');
+    return $response->withStatus(403)->withJson(['response' => 'Insufficient permissions to delete the group.']);
   }
-  $this->groupService->deleteGroup($groupId);
+  if (! $this->groupService->deleteGroup($groupId)) {
+    return $response->withStatus(404)->withJson(['response' => 'Group not found.']);
+  }
+  return $response->withJson(['response' => 'User deleted.']);
+})->add($auth);
+
+$app->get('/group/{id}/members', function (Request $request, Response $response, $args) {
+  $groupId = $args['id'];
+  $group = $this->groupService->getGroupById($groupId);
+  if (! $group) {
+    return $response->withStatus(404)->withJson(['response' => 'Group not found.']);
+  }
+  return $response->withJson($this->groupService->getGroupMembers($groupId));
+});
+
+$app->post('/group/{id}/members', function (Request $request, Response $response, $args) {
+  $groupId = $args['id'];
+  $group = $this->groupService->getGroupById($groupId);
+  if (! $group) {
+    return $response->withStatus(404)->withJson(['response' => 'Group not found.']);
+  }
+  $userId = $this->identity->id;
+  if ($this->groupService->addMember($groupId, $userId)) {
+    return $response->withJson(['response' => "User $userId added to group $groupId."]);
+  } else {
+    return $response->withJson(['response' => "User $userId already in group $groupId."]);
+  }
 })->add($auth);
 
 // Catch-all route to serve a 404 Not Found page if none of the routes match

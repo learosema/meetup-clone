@@ -7,25 +7,19 @@ info:
 servers:
   - url: http://localhost:8080/
 paths:
+  /auth:
+    get:
+      operationId: authTestRoute
+      summary: Get user identity
+      tags:
+        - authentication
+      security:
+        - basicAuth: []
   /users:
     get:
       summary: List users
       tags:
         - users
-      parameters:
-        - name: location
-          in: query
-          required: false
-          description: the location
-          schema:
-            type: string
-        - name: radius
-          in: query
-          required: false
-          default: 20km
-          description: location radius
-          schema:
-            type: string
       responses:
         '200':
           description: An array of users
@@ -85,6 +79,8 @@ paths:
           description: the user picture
     put:
       summary: Upload user picture
+      security:
+        - basicAuth: []
       tags:
         - users
       parameters:
@@ -132,12 +128,14 @@ paths:
       responses:
         '200':
           description: OK
-  /validation/{vid}:
-    /get:
+  /confirm/{id}:
+    get:
+      operationId: confirmUser
+      summary: Confirm user validation
       tags:
-        - user-validation
+        - users
       parameters:
-        - name: vid
+        - name: id
           in: path
           required: true
           description: validation id
@@ -224,6 +222,13 @@ paths:
       summary: Get group members
       tags:
         - group-members
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: group id
+          schema:
+            type: string
   /group/{id}/member:
     post:
       security:
@@ -231,6 +236,13 @@ paths:
       summary: Add group member / join group
       tags:
         - group-members
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: group id
+          schema:
+            type: string
     delete:
       security:
         - basicAuth: []
