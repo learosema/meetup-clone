@@ -33,7 +33,7 @@ $app->get('/users', function(Request $request, Response $response) {
 // Get User By ID
 $app->get('/user/{id}', function(Request $request, Response $response, $args) {
   $user = $this->userService->getUserById($args['id']);
-  if (! $row) {
+  if (! $user) {
     return $response->withStatus(404)->write('404 Not Found');
   }
   return $response->withJson($user);
@@ -58,10 +58,30 @@ $app->post('/user', function(Request $request, Response $response, $args) {
   }
 });
 
-// DELETE /user
+// PUT /user
+// Update user information
+$app->put('/user', function(Request $request, Response $response, $args) {
+  $user = $request->getParsedBody();
+  $userId = $user['id'];
+  if ($this->identity->role !== "admin") {
+    if ($userId != $this->identity->id) {
+      return $response->withStatus(403)->withJson(['response' => 'Permission denied.']);
+    }
+    unset($user['role']);
+  }
+  $this->userService->updateUser($user);
+})->add($auth);
+
+// DELETE /user/{id}
 // Delete account
-$app->delete('/user', function(Request $request, Response $response, $args) {
-  if ($this->userService->deleteUser($this->identity->id)) {
+$app->delete('/user/{id}', function(Request $request, Response $response, $args) {
+  $userId = $args['id'];
+  if ($this->identity->role !== "admin") {
+    if ($userId !== $this->identity->id) {
+      return $response->withStatus(403)->withJson(['response' => 'Permission denied.']);
+    }
+  }
+  if ($this->userService->deleteUser($userId)) {
     return $response->withJson(['response' => 'user deleted.']);
   } else {
     return $response->withStatus(404)->withJson(['response' => 'User not found.']);
@@ -82,7 +102,6 @@ $app->get('/groups', function(Request $request, Response $response, $args) {
 // Create group
 $app->post('/group', function(Request $request, Response $response, $args) {
   try {
-    $query = $this->db->prepare('INSERT INTO `groups` (`id`, `name`, `description`) VALUES (:id, :name, :description)');
     $group = $request->getParsedBody();
     // TODO: validation. add creator of group as member and stuff.
     if (!isset($group['id']) ||
@@ -91,18 +110,39 @@ $app->post('/group', function(Request $request, Response $response, $args) {
       return $response->withStatus(400)->write('Bad Request');
     }
     $this->groupService->createGroup($group);
+    $this->groupService->addMember($group['id'], $this->identity->id, 'admin');
   } catch (PDOEXception $ex) {
     return $response->withStatus(500)->write($ex->message);
   }
 })->add($auth);
 
-$app->put('/group', function (Request $request, Response $response, $args) {
-  return $response->withStatus(500)->write('not implemented yet.');
-});
+// PUT /group/{id} 
+// Update group
+$app->put('/group/{id}', function (Request $request, Response $response, $args) {
+  $groupId = $args['id'];
+  $userRole = $this->groupService->getGroupMemberRole($groupId, $this->identity->id);
+  if ($userRole === FALSE) {
+    return $response->withStatus(403)->write('Not in group or group does not exist.');
+  }
+  if ($userRole !== "admin") {
+    return $response->withStatus(403)->write('Insufficient permissions to delete the group');
+  }
 
-$app->delete('/group/{id}', function (Request $request, Response $response, $args) {
   return $response->withStatus(500)->write('not implemented yet.');
-});
+})->add($auth);
+
+// DELETE /group/{id}
+$app->delete('/group/{id}', function (Request $request, Response $response, $args) {
+  $groupId = $args['id'];
+  $userRole = $this->groupService->getGroupMemberRole($groupId, $this->identity->id);
+  if ($userRole === FALSE) {
+    return $response->withStatus(403)->write('Not in group or group does not exist.');
+  }
+  if ($userRole !== "admin") {
+    return $response->withStatus(403)->write('Insufficient permissions to delete the group');
+  }
+  $this->groupService->deleteGroup($groupId);
+})->add($auth);
 
 // Catch-all route to serve a 404 Not Found page if none of the routes match
 // NOTE: make sure this route is defined last

@@ -10,10 +10,13 @@ class UserService {
 
   public function validate($id, $password) {
     // TODO: encrypt passwords
-    $query = $this->db->prepare('SELECT COUNT(*) AS count FROM users WHERE id = :id AND password = :password AND active = 1');
+    $query = $this->db->prepare('SELECT id, name, role FROM users WHERE id = :id AND password = :password AND active = 1');
     $query->execute([':id' => $id, ':password' => $password]);
     $row = $query->fetch();
-    return ($row['count'] == 1);
+    if (! $row) {
+      return FALSE;
+    }
+    return (object) $row;
   }
 
   public function getUsers() {
@@ -52,7 +55,7 @@ class UserService {
   public function updateUser($user) {
     try {
       $updateQuery = [];
-      $queryParams = [];
+      $queryParams = [':id' => $user['id']];
       foreach (['name', 'password', 'email', 'role'] as $k) {
         if ($user[$k]) {
           array_push($updateQuery, "`$k` = :$k");
@@ -73,6 +76,7 @@ class UserService {
     try {
       $query = $this->db->prepare('DELETE FROM users WHERE `id` = :id');
       $query->execute([':id' => $userId]);
+      return ($query->rowCount() == 1);
     } catch (PDOException $ex) {
       return false;
     }

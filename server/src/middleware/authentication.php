@@ -22,7 +22,7 @@ class Authentication {
       list ($user, $passwd) = explode(':', base64_decode($code));
       $authenticated = $this->authenticate($user, $passwd);
       if ($authenticated) {
-        $this->container['identity'] = [ 'id' => $user, 'name' => $user ];
+        $this->container['identity'] = $authenticated;
       }
     }
     if (! $authenticated) {

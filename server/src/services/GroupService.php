@@ -36,6 +36,21 @@ class GroupService {
     return $query->fetchAll();
   }
 
+  public function getGroupMemberRole($groupId, $userId) {
+    $query = $this->db->prepare('SELECT role FROM group_members WHERE group_id = :group_id AND user_id = :user_id');
+    $query->execute([
+      ':group_id' => $groupId,
+      ':user_id' => $userId
+    ]);
+    if ($query->rowCount() === 0) {
+      // user is not a member of this group
+      // or the group does not exist
+      return FALSE;
+    }
+    $row = $query->fetch();
+    return $row['role'];
+  }
+
   public function createGroup($group) {
     $query = $this->db->prepare('INSERT INTO groups (id, name, description) VALUES (:id, :name, :description)');
     $query->execute([
@@ -48,7 +63,7 @@ class GroupService {
   public function updateGroup($group) {
     try {
       $updateQuery = [];
-      $queryParams = [];
+      $queryParams = [':id' => $group['id']];
       foreach (['name', 'description'] as $k) {
         if ($group[$k]) {
           array_push($updateQuery, "`$k` = :$k");
@@ -108,6 +123,14 @@ class GroupService {
   }
 
   public function updateGroupEvent($groupEvent) {
+    throw new Exception("not implemented yet.");
+  }
+
+  public function addGroupEventAttendee() {
+    throw new Exception("not implemented yet.");
+  }
+
+  public function updateGroupEventAttendee($rsvp) {
     throw new Exception("not implemented yet.");
   }
 }
