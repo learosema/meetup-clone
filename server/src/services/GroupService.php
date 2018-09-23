@@ -22,7 +22,7 @@ class GroupService {
     try {
       $query = $this->db->prepare('SELECT id, name, description FROM groups WHERE id = :id');
       $query->execute([':id' => $groupId]);
-      return $query->fetchAll();
+      return $query->fetch();
     } catch (PDOException $ex) {
       return FALSE;
     }
@@ -94,7 +94,20 @@ class GroupService {
     ]);
   }
 
+  public function isUserInGroup($groupId, $userId) {
+    $query = $this->db->prepare('SELECT COUNT(*) AS count FROM group_members WHERE group_id = :group_id AND user_id = :user_id');
+    $query->execute([
+      ':group_id' => $groupId,
+      ':user_id' => $userId
+    ]);
+    $result = $query->fetch();
+    return ($result['count'] == 1);
+  }
+
   public function addMember($groupId, $userId, $role = 'member') {
+    if (isUserInGroup($groupId, $userId)) {
+      return FALSE;
+    }
     $query = $this->db->prepare('INSERT INTO group_members (group_id, user_id, role) VALUES (:group_id, :user_id, :role)');
     $query->execute([
       ':group_id' => $groupId,
