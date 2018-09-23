@@ -51,6 +51,7 @@ $app->post('/user', function(Request $request, Response $response, $args) {
       !isset($user['name'])) {
     return $response->withStatus(400)->write('Bad Request');
   }
+  unset($user['role']);
   if ($this->userService->addUser($user)) {
     return $response->withJson(['response' => 'user created.']);
   } else {
