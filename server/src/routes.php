@@ -227,6 +227,33 @@ $app->delete('/group/{id}/members/{mid}', function (Request $request, Response $
   }
 })->add($auth);
 
+$app->get('/group/{id}/events', function (Request $request, Response $response, $args) {
+  $groupId = $args['id'];
+  $group = $this->groupService->getGroupById($groupId);
+  if (! $group) {
+    return $response->withStatus(404)->withJson(['response' => 'Group not found.']);
+  }
+  $events = $this->groupService->getGroupEvents($groupId);
+  $group['events'] = $events;
+  return $response->withJson($group);
+});
+
+$app->post('/group/{id}/event/{eid}', function (Request $request, Response $response, $args) {
+  throw new Exception("not implemented yet.");
+})->add($auth);
+
+$app->put('/group/{id}/event/{eid}', function (Request $request, Response $response, $args) {
+  throw new Exception("not implemented yet.");
+})->add($auth);
+
+$app->delete('/group/{id}/event/{eid}', function (Request $request, Response $response, $args) {
+  throw new Exception("not implemented yet.");
+})->add($auth);
+
+$app->post('/rsvp', function (Request $request, Response $response, $args) {
+  throw new Exception("not implemented yet.");
+});
+
 // Catch-all route to serve a 404 Not Found page if none of the routes match
 // NOTE: make sure this route is defined last
 $app->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function($req, $res) {
