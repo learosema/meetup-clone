@@ -20,7 +20,7 @@ $app->get('/', function(Request $request, Response $response) {
 // GET /auth 
 // Test route for authenticated requests, returns identity object
 $app->get('/auth', function(Request $request, Response $response) {
-  return $response->withJson(['identity' => $this->identity]);
+  return $response->withJson($this->identity);
 })->add($auth);
 
 // GET /users

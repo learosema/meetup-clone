@@ -15,6 +15,13 @@ paths:
         - authentication
       security:
         - basicAuth: []
+      responses:
+        '200': 
+          description: the user identity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Identity'
   /users:
     get:
       summary: List users
@@ -294,6 +301,14 @@ components:
       type: http
       scheme: basic
   schemas:
+    Identity:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
     User:
       required:
         - id
