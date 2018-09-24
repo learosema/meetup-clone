@@ -1,0 +1,11 @@
+post:
+  security:
+    - basicAuth: []
+  summary: Submit RSVP
+  tags: 
+    - group-events
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/rsvp.yaml'

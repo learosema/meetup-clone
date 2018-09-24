@@ -1,7 +1,7 @@
 get:
   summary: Get user picture
   tags:
-    - users
+    - user-picture
   parameters:
     - name: id
       description: the user id
@@ -17,7 +17,23 @@ put:
   security:
     - basicAuth: []
   tags:
-    - users
+    - user-picture
+  parameters:
+    - name: id
+      description: the user id
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: the user picture
+delete:
+  summary: Delete user picture
+  security:
+    - basicAuth: []
+  tags:
+    - user-picture
   parameters:
     - name: id
       description: the user id

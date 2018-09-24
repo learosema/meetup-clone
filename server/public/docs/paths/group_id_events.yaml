@@ -15,24 +15,3 @@ get:
         application/json:
           schema:
             $ref: '../schemas/events.yaml'
-post:
-  security:
-    - basicAuth: []
-  summary: Create new event
-  tags: 
-    - group-events
-  parameters:
-    - name: id
-      description: the group id
-      in: path
-      required: true
-      schema:
-        type: string
-  requestBody:
-    content:
-      application/x-www-form-urlencoded:
-        schema:
-          $ref: '../schemas/event.yaml'
-      application/json:
-        schema:
-          $ref: '../schemas/event.yaml'

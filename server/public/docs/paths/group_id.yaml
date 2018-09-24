@@ -1,3 +1,17 @@
+post:
+  security:
+    - basicAuth: []
+  summary: Create new group
+  operationId: createGroup
+  requestBody:
+    description: Group to create
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '#/components/schemas/Group'
+  tags:
+    - groups
 put:
   security:
     - basicAuth: []

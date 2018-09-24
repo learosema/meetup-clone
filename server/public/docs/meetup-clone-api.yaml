@@ -25,7 +25,9 @@ components:
     Event:
       $ref: 'schemas/event.yaml'
     Events:
-      $ref: 'schemas/events.yaml'          
+      $ref: 'schemas/events.yaml'       
+    Rsvp:
+      $ref: 'schemas/rsvp.yaml'  
     Response:
       required:
         - response
@@ -41,19 +43,19 @@ paths:
     $ref: 'paths/user_id.yaml'
   /user/{id}/picture:
     $ref: 'paths/user_id_picture.yaml'
-  /user:
-    $ref: 'paths/user.yaml'
   /confirm/{id}:
     $ref: 'paths/confirm.yaml'
   /groups:
     $ref: 'paths/groups.yaml'
-  /group:
-    $ref: 'paths/group.yaml'
   /group/{id}:
     $ref: 'paths/group_id.yaml'
   /group/{id}/members:
     $ref: 'paths/group_id_members.yaml'
-  /group/{id}/member:
-    $ref: 'paths/group_id_member.yaml'
+  /group/{id}/member/{mid}:
+    $ref: 'paths/group_id_member_mid.yaml'
   /group/{id}/events:
     $ref: 'paths/group_id_events.yaml'
+  /group/{id}/event/{eid}:
+    $ref: 'paths/group_id_event_eid.yaml'
+  /rsvp:
+    $ref: 'paths/rsvp.yaml'

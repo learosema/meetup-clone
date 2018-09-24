@@ -2,7 +2,7 @@ get:
   operationId: confirmUser
   summary: Confirm user validation
   tags:
-    - users
+    - user-validation
   parameters:
     - name: id
       in: path

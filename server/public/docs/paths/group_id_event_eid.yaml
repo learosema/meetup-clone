@@ -1,0 +1,54 @@
+post:
+  security:
+    - basicAuth: []
+  summary: Create new event
+  tags: 
+    - group-events
+  parameters:
+    - name: id
+      description: the group id
+      in: path
+      required: true
+      schema:
+        type: string
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/event.yaml'
+put:
+  security:
+    - basicAuth: []
+  summary: Update event
+  tags: 
+    - group-events
+  parameters:
+    - name: id
+      description: the group id
+      in: path
+      required: true
+      schema:
+        type: string
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/event.yaml'
+delete:
+  security:
+    - basicAuth: []
+  summary: Delete event
+  tags: 
+    - group-events
+  parameters:
+    - name: id
+      description: the group id
+      in: path
+      required: true
+      schema:
+        type: string
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/event.yaml'
