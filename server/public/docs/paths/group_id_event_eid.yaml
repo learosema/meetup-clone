@@ -11,6 +11,12 @@ post:
       required: true
       schema:
         type: string
+    - name: eid
+      description: the event id
+      in: path
+      required: true
+      schema:
+        type: string
   requestBody:
     content:
       application/json:
@@ -29,6 +35,12 @@ put:
       required: true
       schema:
         type: string
+    - name: eid
+      description: the event id
+      in: path
+      required: true
+      schema:
+        type: string
   requestBody:
     content:
       application/json:
@@ -43,6 +55,12 @@ delete:
   parameters:
     - name: id
       description: the group id
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: eid
+      description: the event id
       in: path
       required: true
       schema:

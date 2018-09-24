@@ -39,10 +39,11 @@ $app->get('/user/{id}', function(Request $request, Response $response, $args) {
   return $response->withJson($user);
 })->add($auth);
 
-// POST /user
+// POST /user/{id}
 // Register a new user
-$app->post('/user', function(Request $request, Response $response, $args) {
+$app->post('/user/{id}', function(Request $request, Response $response, $args) {
   $user = $request->getParsedBody();
+  $user['id'] = $args['id'];
   // TODO: better validation
   // https://github.com/DavidePastore/Slim-Validation#json-requests
   if (!isset($user['id']) ||
@@ -59,16 +60,22 @@ $app->post('/user', function(Request $request, Response $response, $args) {
   }
 });
 
-// PUT /user
+// PUT /user/{id}
 // Update user information
-$app->put('/user', function(Request $request, Response $response, $args) {
+$app->put('/user/{id}', function(Request $request, Response $response, $args) {
   $user = $request->getParsedBody();
-  $userId = $user['id'];
+  $userId = $args['id'];
+  $user['id'] = $userId;
   if ($this->identity->role !== "admin") {
     if ($userId != $this->identity->id) {
+      // normal users can only update their own user information
       return $response->withStatus(403)->withJson(['response' => 'Permission denied.']);
     }
-    unset($user['role']);
+    foreach (['role', 'active'] as $key) {
+      if (array_key_exists($key, $user)) {
+        unset($user[$key]);
+      }
+    }
   }
   $this->userService->updateUser($user);
 })->add($auth);
@@ -99,11 +106,12 @@ $app->get('/groups', function(Request $request, Response $response, $args) {
   }
 });
 
-// POST /groups
+// POST /group/{id}
 // Create group
-$app->post('/group', function(Request $request, Response $response, $args) {
+$app->post('/group/{id}', function(Request $request, Response $response, $args) {
   try {
     $group = $request->getParsedBody();
+    $group['id'] = $args['id'];
     // TODO: validation. add creator of group as member and stuff.
     if (!isset($group['id']) ||
       !isset($group['name']) ||
@@ -121,7 +129,11 @@ $app->post('/group', function(Request $request, Response $response, $args) {
 // Update group
 $app->put('/group/{id}', function (Request $request, Response $response, $args) {
   $groupId = $args['id'];
-  $userRole = $this->groupService->getGroupMemberRole($groupId, $this->identity->id);
+  if ($this->identity->role === "admin") {
+    $userRole = "admin";
+  } else {
+    $userRole = $this->groupService->getGroupMemberRole($groupId, $this->identity->id);
+  }
   if ($userRole === FALSE) {
     return $response->withStatus(403)->withJson(['response' => 'Not in group or group does not exist.']);
   }
@@ -169,15 +181,23 @@ $app->get('/group/{id}/members', function (Request $request, Response $response,
   return $response->withJson($this->groupService->getGroupMembers($groupId));
 });
 
-// POST /group/{id}/members
+// POST /group/{id}/member/{mid}
 // Add currently logged in user to group
-$app->post('/group/{id}/members', function (Request $request, Response $response, $args) {
+$app->post('/group/{id}/members/{mid}', function (Request $request, Response $response, $args) {
   $groupId = $args['id'];
+  $userId = array_key_exists('mid', $args) ? $args['mid'] : $userId = $this->identity->id;
   $group = $this->groupService->getGroupById($groupId);
   if (! $group) {
     return $response->withStatus(404)->withJson(['response' => 'Group not found.']);
   }
-  $userId = $this->identity->id;
+  if ($this->identity->role !== "admin" && $userId !== $this->identity->id) {
+    return $response->withStatus(403)->withJson(['response' => 'Permission denied.']);
+  } else {
+    $user = $this->userService->getUserById($userId);
+    if (! $user) {
+      return $response->withStatus(404)->withJson(['response' => 'User not found.']);
+    }
+  }
   if ($this->groupService->addMember($groupId, $userId)) {
     return $response->withJson(['response' => "User $userId added to group $groupId."]);
   } else {
@@ -185,13 +205,21 @@ $app->post('/group/{id}/members', function (Request $request, Response $response
   }
 })->add($auth);
 
-$app->delete('/group/{id}/members', function (Request $request, Response $response, $args) {
+$app->delete('/group/{id}/members/{mid}', function (Request $request, Response $response, $args) {
   $groupId = $args['id'];
+  $userId = array_key_exists('mid', $args) ? $args['mid'] : $userId = $this->identity->id;
   $group = $this->groupService->getGroupById($groupId);
   if (! $group) {
     return $response->withStatus(404)->withJson(['response' => 'Group not found.']);
   }
-  $userId = $this->identity->id;
+  if ($this->identity->role !== "admin" && $userId !== $this->identity->id) {
+    return $response->withStatus(403)->withJson(['response' => 'Permission denied.']);
+  } else {
+    $user = $this->userService->getUserById($userId);
+    if (! $user) {
+      return $response->withStatus(404)->withJson(['response' => 'User not found.']);
+    }
+  }
   if ($this->groupService->deleteMember($groupId, $userId)) {
     return $response->withJson(['response' => "User $userId deleted from group $groupId."]);
   } else {

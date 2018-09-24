@@ -37,6 +37,13 @@ post:
   operationId: createUser
   tags:
     - users
+  parameters:
+    - name: id
+      description: the user id
+      in: path
+      required: true
+      schema:
+        type: string
   requestBody:
     description: User to add to the store
     required: true
@@ -51,6 +58,13 @@ put:
   security:
     - basicAuth: []
   summary: Update user information
+  parameters:
+    - name: id
+      description: the user id
+      in: path
+      required: true
+      schema:
+        type: string
   tags:
     - users
   requestBody:

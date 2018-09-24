@@ -3,6 +3,13 @@ post:
     - basicAuth: []
   summary: Create new group
   operationId: createGroup
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: group id
+      schema:
+        type: string
   requestBody:
     description: Group to create
     required: true
