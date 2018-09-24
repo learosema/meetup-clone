@@ -1,0 +1,17 @@
+get:
+  operationId: confirmUser
+  summary: Confirm user validation
+  tags:
+    - users
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: validation id
+      schema:
+        type: string
+  responses:
+    '200':
+      description: OK
+    '403': 
+      description: Forbidden

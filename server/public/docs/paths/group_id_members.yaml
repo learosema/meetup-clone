@@ -1,0 +1,11 @@
+get:
+  summary: Get group members
+  tags:
+    - group-members
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: group id
+      schema:
+        type: string

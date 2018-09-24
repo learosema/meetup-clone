@@ -1,0 +1,15 @@
+required:
+  - id
+properties:
+  id:
+    type: string
+  password:
+    type: string
+  name:
+    type: string
+  email:
+    type: string
+  active:
+    type: boolean
+  role:
+    type: string

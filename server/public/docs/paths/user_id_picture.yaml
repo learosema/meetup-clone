@@ -1,0 +1,30 @@
+get:
+  summary: Get user picture
+  tags:
+    - users
+  parameters:
+    - name: id
+      description: the user id
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: the user picture
+put:
+  summary: Upload user picture
+  security:
+    - basicAuth: []
+  tags:
+    - users
+  parameters:
+    - name: id
+      description: the user id
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: the user picture

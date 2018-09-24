@@ -1,0 +1,19 @@
+properties:
+  id:
+    type: string
+  group_id:
+    type: string
+  name:
+    type: string
+  description:
+    type: string
+  location:
+    type: string
+  address:
+    type: string
+  lat:
+    type: double
+  lon:
+    type: double
+  date:
+    type: dateTime

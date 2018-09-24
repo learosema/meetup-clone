@@ -1,0 +1,34 @@
+get:
+  summary: Get user information
+  tags: 
+    - users
+  parameters:
+    - name: id
+      description: the user id
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: the user
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+delete:
+  security:
+    - basicAuth: []
+  summary: Delete user
+  tags:
+    - users
+  parameters:
+    - name: id
+      description: the user id
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: OK

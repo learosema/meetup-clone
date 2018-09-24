@@ -1,0 +1,26 @@
+get:
+  summary: List groups
+  operationId: listGroups
+  tags:
+    - groups
+  parameters:
+    - name: location
+      in: query
+      required: false
+      description: the location
+      schema:
+        type: string
+    - name: radius
+      in: query
+      required: false
+      default: 20km
+      description: location radius
+      schema:
+        type: string
+  responses:
+    '200':
+      description: An array of groups
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Groups'

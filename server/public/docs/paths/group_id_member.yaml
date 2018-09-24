@@ -1,0 +1,19 @@
+post:
+  security:
+    - basicAuth: []
+  summary: Add group member / join group
+  tags:
+    - group-members
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: group id
+      schema:
+        type: string
+delete:
+  security:
+    - basicAuth: []
+  summary: Delete member / leave group
+  tags:
+    - group-members

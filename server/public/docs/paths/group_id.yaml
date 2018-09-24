@@ -1,0 +1,28 @@
+put:
+  security:
+    - basicAuth: []
+  summary: Update group
+  operationId: updateGroup
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: group id
+      schema:
+        type: string
+  tags:
+    - groups
+delete:
+  security:
+    - basicAuth: []
+  summary: Delete group
+  operationId: deleteGroup
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: group id
+      schema:
+        type: string
+  tags:
+    - groups

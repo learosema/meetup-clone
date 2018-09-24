@@ -6,295 +6,6 @@ info:
     name: MIT
 servers:
   - url: http://localhost:8080/
-paths:
-  /auth:
-    get:
-      operationId: authTestRoute
-      summary: Get user identity
-      tags:
-        - authentication
-      security:
-        - basicAuth: []
-      responses:
-        '200': 
-          description: the user identity
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Identity'
-  /users:
-    get:
-      summary: List users
-      tags:
-        - users
-      responses:
-        '200':
-          description: An array of users
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Users'
-  /user/{id}:
-    get:
-      summary: Get user information
-      tags: 
-        - users
-      parameters:
-        - name: id
-          description: the user id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: the user
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-    delete:
-      security:
-        - basicAuth: []
-      summary: Delete user
-      tags:
-        - users
-      parameters:
-        - name: id
-          description: the user id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
-  /user/{id}/picture:
-    get:
-      summary: Get user picture
-      tags:
-        - users
-      parameters:
-        - name: id
-          description: the user id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: the user picture
-    put:
-      summary: Upload user picture
-      security:
-        - basicAuth: []
-      tags:
-        - users
-      parameters:
-        - name: id
-          description: the user id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: the user picture
-  /user:
-    post:
-      summary: Create new user
-      operationId: createUser
-      tags:
-        - users
-      requestBody:
-        description: User to add to the store
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        '200':
-          description: OK
-    put:
-      security:
-        - basicAuth: []
-      summary: Update user information
-      tags:
-        - users
-      requestBody:
-        description: User to update
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        '200':
-          description: OK
-  /confirm/{id}:
-    get:
-      operationId: confirmUser
-      summary: Confirm user validation
-      tags:
-        - users
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: validation id
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
-        '403': 
-          description: Forbidden
-  /groups:
-    get:
-      summary: List groups
-      operationId: listGroups
-      tags:
-        - groups
-      parameters:
-        - name: location
-          in: query
-          required: false
-          description: the location
-          schema:
-            type: string
-        - name: radius
-          in: query
-          required: false
-          default: 20km
-          description: location radius
-          schema:
-            type: string
-      responses:
-        '200':
-          description: An array of groups
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Groups'
-  /group:
-    post:
-      security:
-        - basicAuth: []
-      summary: Create new group
-      operationId: createGroup
-      requestBody:
-        description: Group to create
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Group'
-      tags:
-        - groups
-  /group/{id}:
-    put:
-      security:
-        - basicAuth: []
-      summary: Update group
-      operationId: updateGroup
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: group id
-          schema:
-            type: string
-      tags:
-        - groups
-    delete:
-      security:
-        - basicAuth: []
-      summary: Delete group
-      operationId: deleteGroup
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: group id
-          schema:
-            type: string
-      tags:
-        - groups
-  /group/{id}/members:
-    get:
-      summary: Get group members
-      tags:
-        - group-members
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: group id
-          schema:
-            type: string
-  /group/{id}/member:
-    post:
-      security:
-        - basicAuth: []
-      summary: Add group member / join group
-      tags:
-        - group-members
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: group id
-          schema:
-            type: string
-    delete:
-      security:
-        - basicAuth: []
-      summary: Delete member / leave group
-      tags:
-        - group-members
-  /group/{id}/events:
-    get:
-      summary: Get events
-      tags:
-        - group-events
-      parameters:
-        - name: id
-          description: the group id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Events'
-    post:
-      security:
-        - basicAuth: []
-      summary: Create new event
-      tags: 
-        - group-events
-      parameters:
-        - name: id
-          description: the group id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Event'
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Event'
 components:
   securitySchemes:
     basicAuth:
@@ -302,78 +13,47 @@ components:
       scheme: basic
   schemas:
     Identity:
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        role:
-          type: string
+      $ref: 'schemas/identity.yaml'
     User:
-      required:
-        - id
-      properties:
-        id:
-          type: string
-        password:
-          type: string
-        name:
-          type: string
-        email:
-          type: string
-        active:
-          type: boolean
-        role:
-          type: string
+      $ref: 'schemas/user.yaml'
     Users:
-      type: array
-      items:
-        $ref: "#/components/schemas/User"
+      $ref: 'schemas/users.yaml'
     Group:
-      required:
-        - id
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
+      $ref: 'schemas/group.yaml'
     Groups:
-      type: array
-      items:
-        $ref: '#/components/schemas/Group'
+      $ref: 'schemas/groups.yaml'
     Event:
-      properties:
-        id:
-          type: string
-        group_id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        location:
-          type: string
-        address:
-          type: string
-        lat:
-          type: double
-        lon:
-          type: double
-        date:
-          type: dateTime
+      $ref: 'schemas/event.yaml'
     Events:
-      type: array
-      items:
-        $ref: '#/components/schemas/Event'          
-    Error:
+      $ref: 'schemas/events.yaml'          
+    Response:
       required:
-        - code
-        - message
+        - response
       properties:
-        code:
-          type: integer
-          format: int64
-        message:
+        response:
           type: string
+paths:
+  /auth:
+    $ref: 'paths/auth.yaml'
+  /users:
+    $ref: 'paths/users.yaml'
+  /user/{id}:
+    $ref: 'paths/user_id.yaml'
+  /user/{id}/picture:
+    $ref: 'paths/user_id_picture.yaml'
+  /user:
+    $ref: 'paths/user.yaml'
+  /confirm/{id}:
+    $ref: 'paths/confirm.yaml'
+  /groups:
+    $ref: 'paths/groups.yaml'
+  /group:
+    $ref: 'paths/group.yaml'
+  /group/{id}:
+    $ref: 'paths/group_id.yaml'
+  /group/{id}/members:
+    $ref: 'paths/group_id_members.yaml'
+  /group/{id}/member:
+    $ref: 'paths/group_id_member.yaml'
+  /group/{id}/events:
+    $ref: 'paths/group_id_events.yaml'
