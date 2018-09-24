@@ -44,7 +44,7 @@ class UserService {
         ':name' => $user['name'],
         ':password' => $user['password'],
         ':email' => $user['email'],
-        ':role' => array_key_exists($user['role']) ? $user['role'] : 'user'
+        ':role' => array_key_exists('role', $user) ? $user['role'] : 'user'
       ]);
       return true;
     } catch (PDOException $ex) {
