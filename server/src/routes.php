@@ -182,10 +182,10 @@ $app->get('/group/{id}/members', function (Request $request, Response $response,
 });
 
 // POST /group/{id}/member/{mid}
-// Add currently logged in user to group
+// Add user to group
 $app->post('/group/{id}/members/{mid}', function (Request $request, Response $response, $args) {
   $groupId = $args['id'];
-  $userId = array_key_exists('mid', $args) ? $args['mid'] : $userId = $this->identity->id;
+  $userId = array_key_exists('mid', $args) ? $args['mid'] : $this->identity->id;
   $group = $this->groupService->getGroupById($groupId);
   if (! $group) {
     return $response->withStatus(404)->withJson(['response' => 'Group not found.']);
@@ -205,9 +205,12 @@ $app->post('/group/{id}/members/{mid}', function (Request $request, Response $re
   }
 })->add($auth);
 
+
+// DELETE /group/{id}/member/{mid}
+// Delete user from group
 $app->delete('/group/{id}/members/{mid}', function (Request $request, Response $response, $args) {
   $groupId = $args['id'];
-  $userId = array_key_exists('mid', $args) ? $args['mid'] : $userId = $this->identity->id;
+  $userId = array_key_exists('mid', $args) ? $args['mid'] : $this->identity->id;
   $group = $this->groupService->getGroupById($groupId);
   if (! $group) {
     return $response->withStatus(404)->withJson(['response' => 'Group not found.']);
@@ -227,6 +230,8 @@ $app->delete('/group/{id}/members/{mid}', function (Request $request, Response $
   }
 })->add($auth);
 
+// GET /group/{id}/events
+// Get list of group events
 $app->get('/group/{id}/events', function (Request $request, Response $response, $args) {
   $groupId = $args['id'];
   $group = $this->groupService->getGroupById($groupId);
@@ -238,6 +243,8 @@ $app->get('/group/{id}/events', function (Request $request, Response $response, 
   return $response->withJson($group);
 });
 
+// POST /group/{id}/event/{eid}
+// Create new event
 $app->post('/group/{id}/event/{eid}', function (Request $request, Response $response, $args) {
   throw new Exception("not implemented yet.");
 })->add($auth);
