@@ -182,11 +182,58 @@ class GroupService {
     return ($query->rowCount() === 1);
   }
 
-  public function addGroupEventAttendee() {
-    throw new Exception("not implemented yet.");
+  public function getEventAttendees($groupId, $eventId) {
+    $query = $this->db->prepare('SELECT * FROM rsvp WHERE group_id = :group_id AND event_id = :event_id');
+    $query->execute([
+      ':group_id' => $groupId,
+      ':event_id' => $eventId
+    ]);
+    return $query->fetchAll();
   }
 
-  public function updateGroupEventAttendee($rsvp) {
-    throw new Exception("not implemented yet.");
+  public function userSubmittedRSVP($groupId, $eventId, $userId) {
+    $query = $this->db->prepare('SELECT COUNT(*) as count FROM rsvp WHERE group_id = :group_id AND event_id = :event_id AND user_id = :user_id');
+    $query->execute([
+      ':group_id' => $groupId,
+      ':event_id' => $eventId,
+      ':user_id' => $userId
+    ]);
+    $row = $query->fetch();
+    return ($row['count'] == 1);
   }
+
+  private function addEventAttendee($groupId, $eventId, $userId, $rsvp) {
+    $cols = 'group_id, event_id, user_id, rsvp, timestamp';
+    $vals = ':group_id, :event_id, :user_id, :rsvp, :timestamp';
+    $query = $this->db->prepare("INSERT INTO rsvp ($cols) VALUES ($vals)");
+    $query->execute([
+      ':group_id' => $groupId,
+      ':event_id' => $eventId,
+      ':user_id' => $userId,
+      ':rsvp' => $rsvp,
+      ':timestamp' => date('c')
+    ]);
+    return ($query->rowCount() === 1);
+  }
+
+  private function updateEventAttendee($groupId, $eventId, $userId, $rsvp) {
+    $query = $this->db->prepare("UPDATE rsvp SET rsvp = :rsvp, timestamp = :timestamp WHERE group_id = :group_id AND event_id = :event_id AND user_id = :user_id");
+    $query->execute([
+      ':group_id' => $groupId,
+      ':event_id' => $eventId,
+      ':user_id' => $userId,
+      ':rsvp' => $rsvp,
+      ':timestamp' => date('c')
+    ]);
+    return ($query->rowCount() === 1);
+  }
+
+  public function submitRSVP($groupId, $eventId, $userId, $rsvp) {
+    if (! $this->userSubmittedRSVP($groupId, $eventId, $userId)) {
+      return $this->addEventAttendee($groupId, $eventId, $userId, $rsvp);
+    } else {
+      return $this->updateEventAttendee($groupId, $eventId, $userId, $rsvp);
+    }
+  }
+
 }
