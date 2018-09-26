@@ -126,17 +126,60 @@ class GroupService {
     return ($query->rowCount() === 1);
   }
 
-  public function addGroupEvent($groupEvent) {
-    // $query = $this->db->prepare('INSERT INTO group_events (id, group_id, name, description, location, address, lat, lon, date) VALUES ()');
-    throw new Exception("not implemented yet.");
+  public function getGroupEvents($groupId) {
+    $query = $this->db->prepare('SELECT * FROM group_events WHERE group_id = :group_id');
+    $query->execute([':group_id' => $groupId]);
+    return ($query->fetchAll());
   }
 
-  public function deleteGroupEvent($groupEvent) {
-    throw new Exception("not implemented yet.");
+  public function addGroupEvent($event) {
+    $cols = ['id', 'group_id', 'name', 'description', 'location', 'address', 'lat', 'lon', 'date', 'timestamp'];
+    $vals = array_map(function($col) { return ':' . $col; }, $cols);
+    $strCols = implode(', ', $cols);
+    $strVals = implode(', ', $vals);
+    $query = $this->db->prepare("INSERT INTO group_events ($cols) VALUES ($vals)");
+    $query->execute([
+      ':id' => $event['id'], 
+      ':group_id' => $event['group_id'], 
+      ':name' => $event['name'], 
+      ':description' => $event['description'], 
+      ':location' => $event['location'], 
+      ':address' => $event['address'], 
+      ':lat' => $event['lat'], 
+      ':lon' => $event['lon'], 
+      ':date' => $event['date'], 
+      ':timestamp' => date('c')]);
+    return ($query->rowCount() === 1);
   }
 
-  public function updateGroupEvent($groupEvent) {
-    throw new Exception("not implemented yet.");
+  public function deleteGroupEvent($eventId) {
+    $query = $this->db->prepare('DELETE FROM group_events WHERE id = :id');
+    $query->execute([
+      ':id' => $eventId
+    ]);
+    return ($query->rowCount() === 1);
+  }
+
+  public function updateGroupEvent($event) {
+    $event['timestamp'] = date('c');
+    $cols = array_filter(['group_id', 'name', 'description', 'location', 'address', 'lat', 'lon', 'date', 'timestamp'], function($key) {
+      return array_key_exists($key, $event);
+    });
+    $updates = array_map(function($col) { return $col . ' = :' . $col; }, $cols);
+    $strUpdates = implode(', ', $cols);
+    $query = $this->db->prepare("UPDATE group_events SET $strUpdates WHERE id = :id");
+    $query->execute([
+      ':id' => $event['id'], 
+      ':group_id' => $event['group_id'], 
+      ':name' => $event['name'], 
+      ':description' => $event['description'], 
+      ':location' => $event['location'], 
+      ':address' => $event['address'], 
+      ':lat' => $event['lat'], 
+      ':lon' => $event['lon'], 
+      ':date' => $event['date'], 
+      ':timestamp' => date('c')]);
+    return ($query->rowCount() === 1);
   }
 
   public function addGroupEventAttendee() {
