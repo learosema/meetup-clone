@@ -12,7 +12,7 @@ $container['db'] = function ($c) {
 };
 
 $container['userService'] = function ($c) {
-  return new \Services\UserService($c->db);
+  return new \Services\UserService($c->db, $c->env);
 };
 
 $container['groupService'] = function ($c) {

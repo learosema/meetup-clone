@@ -4,8 +4,9 @@ namespace Services;
 
 class UserService {
 
-  public function __construct($db) {
+  public function __construct($db, $env) {
     $this->db = $db;
+    $this->env = $env;
   }
 
   public function createSaltedHash($str) {
