@@ -8,10 +8,13 @@ class UserService {
     $this->db = $db;
   }
 
+  public function createSaltedHash($str) {
+    return hash('sha512', $str . $this->env->salt);
+  }
+
   public function validate($id, $password) {
-    // TODO: encrypt passwords
     $query = $this->db->prepare('SELECT id, name, role FROM users WHERE id = :id AND password = :password AND active = 1');
-    $query->execute([':id' => $id, ':password' => $password]);
+    $query->execute([':id' => $id, ':password' => $this->createSaltedHash($password)]);
     $row = $query->fetch();
     if (! $row) {
       return FALSE;
@@ -36,15 +39,16 @@ class UserService {
     return $row;
   }
 
-  public function addUser($user) {
+  public function addUser($user, $active = false) {
     try {
       $query = $this->db->prepare('INSERT INTO users (id, name, password, email, role, timestamp) VALUES (:id, :name, :password, :email, :role, :timestamp)');
       $query->execute([
         ':id' => $user['id'],
         ':name' => $user['name'],
-        ':password' => $user['password'],
+        ':password' => $this->createSaltedHash($user['password']),
         ':email' => $user['email'],
         ':role' => array_key_exists('role', $user) ? $user['role'] : 'user',
+        ':active' => $active,
         ':timestamp' => date('c')
       ]);
       return true;
