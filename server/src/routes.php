@@ -238,7 +238,7 @@ $app->get('/group/{id}/events', function (Request $request, Response $response, 
   if (! $group) {
     return $response->withStatus(404)->withJson(['response' => 'Group not found.']);
   }
-  $events = $this->groupService->getGroupEvents($groupId);
+  $events = $this->eventService->getGroupEvents($groupId);
   $group['events'] = $events;
   return $response->withJson($group);
 });
@@ -246,20 +246,106 @@ $app->get('/group/{id}/events', function (Request $request, Response $response, 
 // POST /group/{id}/event/{eid}
 // Create new event
 $app->post('/group/{id}/event/{eid}', function (Request $request, Response $response, $args) {
-  throw new Exception("not implemented yet.");
+  $groupId = $args['id'];
+  $eventId = $args['eid'];
+  if ($this->identity->role === "admin") {
+    $userRole = "admin";
+  } else {
+    $userRole = $this->groupService->getGroupMemberRole($groupId, $this->identity->id);
+  }
+  if ($userRole !== "admin") {
+    return $response->withStatus(403)->withJson(['response' => 'Permission denied.']);
+  }
+  $group = $this->groupService->getGroupById($groupId);
+  if (! $group) {
+    return $response->withStatus(404)->withJson(['response' => 'Group not found.']);
+  }
+  $event = $this->eventService->getGroupEvent($groupId, $eventId);
+  if ($event) {
+    return $response->withStatus(409)->withJson(['response' => 'Event already exists. Use PUT to update.']);
+  }
+  $event = $request->getParsedBody();
+  $event['id'] = $eventId;
+  $event['group_id'] = $groupId;
+  $this->eventService->createGroupEvent($event);
+  return $response->withJson(['response' => 'Group created.']);
 })->add($auth);
 
 $app->put('/group/{id}/event/{eid}', function (Request $request, Response $response, $args) {
-  throw new Exception("not implemented yet.");
+  $groupId = $args['id'];
+  $eventId = $args['eid'];
+  if ($this->identity->role === "admin") {
+    $userRole = "admin";
+  } else {
+    $userRole = $this->groupService->getGroupMemberRole($groupId, $this->identity->id);
+  }
+  if ($userRole !== "admin") {
+    return $response->withStatus(403)->withJson(['response' => 'Permission denied.']);
+  }
+  $group = $this->groupService->getGroupById($groupId);
+  if (! $group) {
+    return $response->withStatus(404)->withJson(['response' => 'Group not found.']);
+  }
+  $event = $this->eventService->getGroupEvent($groupId, $eventId);
+  if (! $event) {
+    return $response->withStatus(404)->withJson(['response' => 'Event not found.']);
+  }
+  $event = $request->getParsedBody();
+  $event['id'] = $eventId;
+  $event['group_id'] = $groupId;
+  $this->eventService->createGroupEvent($event);
+  return $response->withJson(['response' => 'Group created.']);
 })->add($auth);
 
 $app->delete('/group/{id}/event/{eid}', function (Request $request, Response $response, $args) {
-  throw new Exception("not implemented yet.");
+  $groupId = $args['id'];
+  $eventId = $args['eid'];
+  if ($this->identity->role === "admin") {
+    $userRole = "admin";
+  } else {
+    $userRole = $this->groupService->getGroupMemberRole($groupId, $this->identity->id);
+  }
+  if ($userRole !== "admin") {
+    return $response->withStatus(403)->withJson(['response' => 'Permission denied.']);
+  }
+  $group = $this->groupService->getGroupById($groupId);
+  if (! $group) {
+    return $response->withStatus(404)->withJson(['response' => 'Group not found.']);
+  }
+  $event = $this->eventService->getGroupEvent($groupId, $eventId);
+  if (! $event) {
+    return $response->withStatus(404)->withJson(['response' => 'Event not found.']);
+  }
+  $this->eventService->deleteGroupEvent($groupId, $eventId);
+  return $response->withJson(['response' => 'Event deleted.']);
 })->add($auth);
 
-$app->post('/rsvp', function (Request $request, Response $response, $args) {
-  throw new Exception("not implemented yet.");
-});
+$app->post('/group/{id}/event/{eid}/rsvp', function (Request $request, Response $response, $args) {
+  $groupId = $args['id'];
+  $eventId = $args['eid'];
+  $data = $request->getParsedBody();
+  if (! array_key_exists('rsvp', $data) || $data['rsvp'] !== 'yes' || $data['rsvp'] !== 'no') {
+    return $response->withStatus(422)->withJson(['response' => 'Parameter rsvp missing.']);
+  }
+  if ($this->identity->role === "admin") {
+    $userRole = "admin";
+  } else {
+    $userRole = $this->groupService->getGroupMemberRole($groupId, $this->identity->id);
+  }
+  if ($userRole !== "admin") {
+    return $response->withStatus(403)->withJson(['response' => 'Permission denied.']);
+  }
+  $group = $this->groupService->getGroupById($groupId);
+  if (! $group) {
+    return $response->withStatus(404)->withJson(['response' => 'Group not found.']);
+  }
+  $event = $this->eventService->getGroupEvent($groupId, $eventId);
+  if (! $event) {
+    return $response->withStatus(404)->withJson(['response' => 'Event not found.']);
+  }
+  $this->eventService->submitRSVP($groupId, $eventId, $this->identity->id, $data['rsvp']);
+  return $response->withJson(['response' => 'RSVP submitted']);
+})->add($auth);
 
 // Catch-all route to serve a 404 Not Found page if none of the routes match
 // NOTE: make sure this route is defined last
