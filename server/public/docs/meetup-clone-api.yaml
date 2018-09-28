@@ -57,5 +57,5 @@ paths:
     $ref: 'paths/group_id_events.yaml'
   /group/{id}/event/{eid}:
     $ref: 'paths/group_id_event_eid.yaml'
-  /rsvp:
+  /group/{id}/event/{eid}/rsvp:
     $ref: 'paths/rsvp.yaml'

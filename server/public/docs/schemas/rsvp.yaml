@@ -1,7 +1,3 @@
 properties:
-  group_id:
-    type: string
-  event_id:
-    type: string
   rsvp:
     type: string

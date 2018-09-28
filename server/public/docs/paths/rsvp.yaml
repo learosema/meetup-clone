@@ -4,6 +4,19 @@ post:
   summary: Submit RSVP
   tags: 
     - group-events
+  parameters:
+  - name: id
+    description: the group id
+    in: path
+    required: true
+    schema:
+      type: string
+  - name: eid
+    description: the event id
+    in: path
+    required: true
+    schema:
+      type: string
   requestBody:
     content:
       application/json:
