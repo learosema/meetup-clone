@@ -22,3 +22,17 @@ $container['groupService'] = function ($c) {
 $container['eventService'] = function ($c) {
   return new \Services\EventService($c->db);
 };
+
+$container['env'] = function ($c) {
+  $dotEnvFile = __DIR__  . '/../db/.env';
+  if (! file_exists($dotEnvFile)) {
+    @file_put_contents($dotEnvFile, 'salt=' . hash('sha256', date('c').rand()), LOCK_EX);
+  }
+  $data = [];
+  foreach (file($dotEnvFile) as $line) {
+    list ($key, $value) = explode('=', $line);
+    $data[$key] = $value;
+  }
+  return (object)$data;
+};
+

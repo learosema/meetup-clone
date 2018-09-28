@@ -11,6 +11,14 @@ $app->options('/{routes:.+}', function ($request, $response, $args) {
   return $response;
 });
 
+$app->get('/env', function (Request $request, Response $response, $args) {
+  if ($request->getUri()->getHost() !== 'localhost') {
+    return $response->withStatus(403)->withJson(['response' => 'Permission denied.']);
+  }
+  return $response->withJson($this->env);
+});
+
+
 // GET /
 // redirects to swagger OpenAPI documentation
 $app->get('/', function(Request $request, Response $response) {
