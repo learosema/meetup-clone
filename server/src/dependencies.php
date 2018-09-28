@@ -8,6 +8,13 @@ $container['db'] = function ($c) {
   $db = new PDO($db_config['connection'], $db_config['user'], $db_config['password']);
   $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
   $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+  $db->isFreshDB = false;
+  try {
+    $db->exec('SELECT 1 FROM users');
+  } catch (PDOException $ex) {
+    $db->exec(file_get_contents(__DIR__ . '/../db/schema.sql'));
+    $db->isFreshDB = true;
+  }
   return $db;
 };
 

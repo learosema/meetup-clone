@@ -7,6 +7,15 @@ class UserService {
   public function __construct($db, $env) {
     $this->db = $db;
     $this->env = $env;
+    if ($this->db->isFreshDB) {
+      $this->addUser([
+        'id' => 'admin',
+        'name' => 'Administrator',
+        'password' => 'admin',
+        'email' => 'admin@meetup-clone.lo',
+        'role' => 'admin'
+      ], true);
+    }
   }
 
   public function createSaltedHash($str) {
@@ -42,7 +51,7 @@ class UserService {
 
   public function addUser($user, $active = false) {
     try {
-      $query = $this->db->prepare('INSERT INTO users (id, name, password, email, role, timestamp) VALUES (:id, :name, :password, :email, :role, :timestamp)');
+      $query = $this->db->prepare('INSERT INTO users (id, name, password, email, role, active, timestamp) VALUES (:id, :name, :password, :email, :role, :active, :timestamp)');
       $query->execute([
         ':id' => $user['id'],
         ':name' => $user['name'],
