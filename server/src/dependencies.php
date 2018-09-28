@@ -14,6 +14,9 @@ $container['db'] = function ($c) {
   } catch (PDOException $ex) {
     $db->exec(file_get_contents(__DIR__ . '/../db/schema.sql'));
     $db->isFreshDB = true;
+    if ($db_config['connection'] === 'sqlite::memory:') {
+      $db->exec(file_get_contents(__DIR__ . '/../db/testdata.sql'));
+    }
   }
   return $db;
 };
@@ -42,4 +45,3 @@ $container['env'] = function ($c) {
   }
   return (object)$data;
 };
-
