@@ -18,3 +18,7 @@ $container['userService'] = function ($c) {
 $container['groupService'] = function ($c) {
   return new \Services\GroupService($c->db);
 };
+
+$container['eventService'] = function ($c) {
+  return new \Services\EventService($c->db);
+};
