@@ -162,10 +162,11 @@ class GroupService {
     return ($query->rowCount() === 1);
   }
 
-  public function deleteGroupEvent($eventId) {
-    $query = $this->db->prepare('DELETE FROM group_events WHERE id = :id');
+  public function deleteGroupEvent($groupId, $eventId) {
+    $query = $this->db->prepare('DELETE FROM group_events WHERE id = :id AND group_id = :group_id');
     $query->execute([
-      ':id' => $eventId
+      ':id' => $eventId,
+      ':group_id' => $groupId
     ]);
     return ($query->rowCount() === 1);
   }
