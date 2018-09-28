@@ -52,11 +52,12 @@ class GroupService {
   }
 
   public function createGroup($group) {
-    $query = $this->db->prepare('INSERT INTO groups (id, name, description) VALUES (:id, :name, :description)');
+    $query = $this->db->prepare('INSERT INTO groups (id, name, description, timestamp) VALUES (:id, :name, :description, :timestamp)');
     $query->execute([
       ':id' => $group['id'],
       ':name' => $group['name'],
-      ':description' => $group['description']
+      ':description' => $group['description'],
+      ':timestamp' => date('c')
     ]);
   }
 
@@ -70,6 +71,8 @@ class GroupService {
           $queryParams[":$k"] = $user[$k];
         }
       }
+      array_push($updateQuery, '`timestamp` = :timestamp');
+      $queryParams[':timestamp'] = date('c');
       if (count($queryParams) > 0) {
         $query = $this->db->prepare('UPDATE groups SET '. implode(", ", $updateQuery).' WHERE `id` = :id');
         $query->execute($queryParams);
@@ -108,11 +111,12 @@ class GroupService {
     if ($this->isUserInGroup($groupId, $userId)) {
       return FALSE;
     }
-    $query = $this->db->prepare('INSERT INTO group_members (group_id, user_id, role) VALUES (:group_id, :user_id, :role)');
+    $query = $this->db->prepare('INSERT INTO group_members (group_id, user_id, role, timestamp) VALUES (:group_id, :user_id, :role, :timestamp)');
     $query->execute([
       ':group_id' => $groupId,
       ':user_id' => $userId,
-      ':role' => $role
+      ':role' => $role,
+      ':timestamp' => date('c')
     ]);
     return ($query->rowCount() === 1);
   }

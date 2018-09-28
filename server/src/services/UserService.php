@@ -38,13 +38,14 @@ class UserService {
 
   public function addUser($user) {
     try {
-      $query = $this->db->prepare('INSERT INTO users (id, name, password, email, role) VALUES (:id, :name, :password, :email, :role)');
+      $query = $this->db->prepare('INSERT INTO users (id, name, password, email, role, timestamp) VALUES (:id, :name, :password, :email, :role, :timestamp)');
       $query->execute([
         ':id' => $user['id'],
         ':name' => $user['name'],
         ':password' => $user['password'],
         ':email' => $user['email'],
-        ':role' => array_key_exists('role', $user) ? $user['role'] : 'user'
+        ':role' => array_key_exists('role', $user) ? $user['role'] : 'user',
+        ':timestamp' => date('c')
       ]);
       return true;
     } catch (PDOException $ex) {
