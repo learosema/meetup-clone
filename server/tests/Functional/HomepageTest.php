@@ -51,4 +51,17 @@ class HomepageTest extends BaseTestCase
     $this->assertEquals('User updated.', $data->response);
   }
 
+  public function testGetGroups() {
+    $response = $this->runApp('GET', '/groups');
+    $this->assertEquals(200, $response->getStatusCode());
+  }
+
+  public function testPostGroup() {
+    $response = $this->runApp('POST', '/group/javascript', [
+      'name' => 'JavaScript Community Group',
+      'description' => 'Lorem ipsum dolor sit amet consectetur, adipisicing elit.'
+    ], ['user' => 'admin', 'password' => 'admin']);
+    $this->assertEquals(200, $response->getStatusCode());
+  }
+
 }
