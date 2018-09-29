@@ -86,6 +86,7 @@ $app->put('/user/{id}', function(Request $request, Response $response, $args) {
     }
   }
   $this->userService->updateUser($user);
+  return $response->withJson(['response' => 'User updated.']);
 })->add($auth);
 
 // DELETE /user/{id}

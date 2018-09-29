@@ -40,4 +40,15 @@ class HomepageTest extends BaseTestCase
     $data = json_decode($response->getBody());
   }
 
+  public function testPutUser() {
+    $response = $this->runApp('PUT', '/user/admin', [
+      'name' => 'Admin',
+      'password' => 'admin',
+      'email' => 'admin@admin.local'
+    ], ['user' => 'admin', 'password' => 'admin']);
+    $this->assertEquals(200, $response->getStatusCode());
+    $data = json_decode($response->getBody());
+    $this->assertEquals('User updated.', $data->response);
+  }
+
 }
