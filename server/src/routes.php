@@ -61,10 +61,11 @@ $app->post('/user/{id}', function(Request $request, Response $response, $args) {
     return $response->withStatus(400)->withJson(['response' => 'Bad Request.']);
   }
   unset($user['role']);
-  if ($this->userService->addUser($user)) {
-    return $response->withJson(['response' => 'user created.']);
-  } else {
+  if ($this->userService->getUserById($user['id'])) {
     return $response->withStatus(409)->withJson(['response' => 'User already exists.']);
+  }
+  if ($this->userService->addUser($user)) {
+    return $response->withJson(['response' => 'User created.']);
   }
 });
 
@@ -280,6 +281,8 @@ $app->post('/group/{id}/event/{eid}', function (Request $request, Response $resp
   return $response->withJson(['response' => 'Group created.']);
 })->add($auth);
 
+// PUT /group/{id}/event/{eid}
+// Update event
 $app->put('/group/{id}/event/{eid}', function (Request $request, Response $response, $args) {
   $groupId = $args['id'];
   $eventId = $args['eid'];
@@ -306,6 +309,8 @@ $app->put('/group/{id}/event/{eid}', function (Request $request, Response $respo
   return $response->withJson(['response' => 'Group created.']);
 })->add($auth);
 
+// DELETE /group/{id}/event/{eid}
+// Delete event
 $app->delete('/group/{id}/event/{eid}', function (Request $request, Response $response, $args) {
   $groupId = $args['id'];
   $eventId = $args['eid'];
@@ -329,6 +334,8 @@ $app->delete('/group/{id}/event/{eid}', function (Request $request, Response $re
   return $response->withJson(['response' => 'Event deleted.']);
 })->add($auth);
 
+// POST /group/{id}/event/{eid}/rsvp
+// Submit RSVP
 $app->post('/group/{id}/event/{eid}/rsvp', function (Request $request, Response $response, $args) {
   $groupId = $args['id'];
   $eventId = $args['eid'];
