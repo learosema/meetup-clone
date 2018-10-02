@@ -64,4 +64,31 @@ class HomepageTest extends BaseTestCase
     $this->assertEquals(200, $response->getStatusCode());
   }
 
+  public function testPutGroup() {
+    $response = $this->runApp('PUT', '/group/test', [
+      'name' => 'Test Group',
+      'description' => 'Lorem ipsum dolor sit amet consectetur, adipisicing elit.'
+    ], ['user' => 'admin', 'password' => 'admin'], function ($c) {
+      $c->groupService->createGroup([
+        'id' => 'test',
+        'name' => 'Test',
+        'description' => 'test'
+      ]);
+    });
+    echo $response->getBody();
+    $this->assertEquals(200, $response->getStatusCode());
+  }
+
+  public function testDeleteGroup() {
+    $response = $this->runApp('DELETE', '/group/test', null, ['user' => 'admin', 'password' => 'admin'], function ($c) {
+      $c->groupService->createGroup([
+        'id' => 'test',
+        'name' => 'Test',
+        'description' => 'test'
+      ]);
+    });
+    var_dump(json_decode($response->getBody()));
+    $this->assertEquals(200, $response->getStatusCode());
+  }
+
 }

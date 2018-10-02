@@ -7,12 +7,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\Environment;
 
-/**
- * This is an example class that shows how you could set up a method that
- * runs the application. Note that it doesn't cover all use-cases and is
- * tuned to the specifics of this skeleton app, so if your needs are
- * different, you'll need to change it.
- */
+
 class BaseTestCase extends \PHPUnit_Framework_TestCase
 {
   /**
@@ -30,7 +25,7 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
    * @param array|object|null $requestData the request data
    * @return \Slim\Http\Response
    */
-  public function runApp($requestMethod, $requestUri, $requestData = null, $authorization = null)
+  public function runApp($requestMethod, $requestUri, $requestData = null, $authorization = null, $beforeStartFunc = null)
   {
     $env = [
       'REQUEST_METHOD' => $requestMethod,
@@ -72,6 +67,10 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
 
     // Register routes
     require __DIR__ . '/../../src/routes.php';
+
+    if (is_callable($beforeStartFunc)) {
+      $beforeStartFunc($app->getContainer());
+    }
 
     // Process the application
     $response = $app->process($request, $response);
