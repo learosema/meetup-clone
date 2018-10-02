@@ -305,7 +305,7 @@ $app->put('/group/{id}/event/{eid}', function (Request $request, Response $respo
   $event = $request->getParsedBody();
   $event['id'] = $eventId;
   $event['group_id'] = $groupId;
-  $this->eventService->createGroupEvent($event);
+  $this->eventService->updateGroupEvent($event);
   return $response->withJson(['response' => 'Event updated.']);
 })->add($auth);
 

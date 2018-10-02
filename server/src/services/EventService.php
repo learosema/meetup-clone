@@ -55,11 +55,11 @@ class EventService {
 
   public function updateGroupEvent($event) {
     $event['timestamp'] = date('c');
-    $cols = array_filter(['group_id', 'name', 'description', 'location', 'address', 'lat', 'lon', 'date', 'timestamp'], function($key) {
+    $cols = array_filter(['group_id', 'name', 'description', 'location', 'address', 'lat', 'lon', 'date', 'timestamp'], function($key) use ($event) {
       return array_key_exists($key, $event);
     });
     $updates = array_map(function($col) { return $col . ' = :' . $col; }, $cols);
-    $strUpdates = implode(', ', $cols);
+    $strUpdates = implode(', ', $updates);
     $query = $this->db->prepare("UPDATE group_events SET $strUpdates WHERE id = :id");
     $query->execute([
       ':id' => $event['id'], 
