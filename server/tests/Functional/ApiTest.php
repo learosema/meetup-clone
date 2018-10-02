@@ -2,7 +2,10 @@
 
 namespace Tests\Functional;
 
-
+/**
+ * This API test is based on the Slim skeleton. 
+ * It just tests if the REST API endpoints return the expected results.
+ */
 class ApiTest extends BaseTestCase
 {
 
@@ -178,21 +181,27 @@ class ApiTest extends BaseTestCase
     $this->assertEquals(200, $response->getStatusCode());
   }
 
-// PUT /group/{id}/event/{id} should create an event
-public function testUpdateGroupEvent() {
-  $response = $this->runApp('PUT', '/group/test/event/test-1', [
-    'id' => 'test-1',
-    'group_id' => 'test lalala',
-    'name' => 'Test Hello World',
-    'description' => 'Lorem ipsum dolor sit amet consectetur, adipisicing elit.',
-    'location' => 'Dummy Place',
-    'address' => 'South Pole',
-    'lat' => '0',
-    'lon' => '90',
-    'date' => '2018-10-31'
-  ], ['user' => 'lea', 'password' => 'lea123']);
-  $this->assertEquals(200, $response->getStatusCode());
-}
+  // PUT /group/{id}/event/{id} should create an event
+  public function testUpdateGroupEvent() {
+    $response = $this->runApp('PUT', '/group/test/event/test-1', [
+      'id' => 'test-1',
+      'group_id' => 'test lalala',
+      'name' => 'Test Hello World',
+      'description' => 'Lorem ipsum dolor sit amet consectetur, adipisicing elit.',
+      'location' => 'Dummy Place',
+      'address' => 'South Pole',
+      'lat' => '0',
+      'lon' => '90',
+      'date' => '2018-10-31'
+    ], ['user' => 'lea', 'password' => 'lea123']);
+    $this->assertEquals(200, $response->getStatusCode());
+  }
+
+  // DELETE /group/{id}/event/{id} should delete an event
+  public function testDeleteGroupEvent() {
+    $response = $this->runApp('DELETE', '/group/test/event/test-1', null, ['user' => 'lea', 'password' => 'lea123']);
+    $this->assertEquals(200, $response->getStatusCode());
+  }
 
 
 }
