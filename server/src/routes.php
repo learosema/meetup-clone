@@ -151,7 +151,7 @@ $app->put('/group/{id}', function (Request $request, Response $response, $args) 
   }
   $group = $request->getParsedBody();
   $group['id'] = $groupId;
-  if ($this->updateGroup($group)) {
+  if ($this->groupService->updateGroup($group)) {
     return $response->withJson(['response' => 'Group updated.']);
   } else {
     return $response->withStatus(404)->withJson(['response' => 'Group not found.']);
@@ -176,7 +176,7 @@ $app->delete('/group/{id}', function (Request $request, Response $response, $arg
   if (! $this->groupService->deleteGroup($groupId)) {
     return $response->withStatus(404)->withJson(['response' => 'Group not found.']);
   }
-  return $response->withJson(['response' => 'User deleted.']);
+  return $response->withJson(['response' => 'Group deleted.']);
 })->add($auth);
 
 // GET /group/{id}/members
