@@ -17,6 +17,15 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
    */
   protected $withMiddleware = true;
 
+
+  /**
+   * Override this function to provide test data
+   * 
+   * @param $c DI container of the Slim App
+   */
+  protected function prepareTestData($c) {
+  }
+
   /**
    * Process the application given a request method and URI
    *
@@ -68,9 +77,9 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
     // Register routes
     require __DIR__ . '/../../src/routes.php';
 
-    if (is_callable($beforeStartFunc)) {
-      $beforeStartFunc($app->getContainer());
-    }
+    
+    $this->prepareTestData($app->getContainer());
+    
 
     // Process the application
     $response = $app->process($request, $response);

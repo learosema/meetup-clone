@@ -4,7 +4,15 @@ namespace Tests\Functional;
 
 class HomepageTest extends BaseTestCase
 {
-  
+
+  protected function prepareTestData($c) {
+    $c->groupService->createGroup([
+      'id' => 'test',
+      'name' => 'Test',
+      'description' => 'test'
+    ]);
+  }
+
   // The index route should redirect to the Swagger OpenAPI documentation
   public function testGetIndex()
   {
@@ -68,27 +76,13 @@ class HomepageTest extends BaseTestCase
     $response = $this->runApp('PUT', '/group/test', [
       'name' => 'Test Group',
       'description' => 'Lorem ipsum dolor sit amet consectetur, adipisicing elit.'
-    ], ['user' => 'admin', 'password' => 'admin'], function ($c) {
-      $c->groupService->createGroup([
-        'id' => 'test',
-        'name' => 'Test',
-        'description' => 'test'
-      ]);
-    });
-    echo $response->getBody();
+    ], ['user' => 'admin', 'password' => 'admin']);
     $this->assertEquals(200, $response->getStatusCode());
   }
 
   public function testDeleteGroup() {
-    $response = $this->runApp('DELETE', '/group/test', null, ['user' => 'admin', 'password' => 'admin'], function ($c) {
-      $c->groupService->createGroup([
-        'id' => 'test',
-        'name' => 'Test',
-        'description' => 'test'
-      ]);
-    });
-    var_dump(json_decode($response->getBody()));
+    $response = $this->runApp('DELETE', '/group/test', null, ['user' => 'admin', 'password' => 'admin']);
     $this->assertEquals(200, $response->getStatusCode());
   }
-
+ 
 }
