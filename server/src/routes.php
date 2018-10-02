@@ -277,8 +277,8 @@ $app->post('/group/{id}/event/{eid}', function (Request $request, Response $resp
   $event = $request->getParsedBody();
   $event['id'] = $eventId;
   $event['group_id'] = $groupId;
-  $this->eventService->createGroupEvent($event);
-  return $response->withJson(['response' => 'Group created.']);
+  $this->eventService->addGroupEvent($event);
+  return $response->withJson(['response' => 'Event created.']);
 })->add($auth);
 
 // PUT /group/{id}/event/{eid}
@@ -306,7 +306,7 @@ $app->put('/group/{id}/event/{eid}', function (Request $request, Response $respo
   $event['id'] = $eventId;
   $event['group_id'] = $groupId;
   $this->eventService->createGroupEvent($event);
-  return $response->withJson(['response' => 'Group created.']);
+  return $response->withJson(['response' => 'Event updated.']);
 })->add($auth);
 
 // DELETE /group/{id}/event/{eid}

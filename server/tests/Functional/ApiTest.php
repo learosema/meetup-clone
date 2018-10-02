@@ -7,7 +7,8 @@ class ApiTest extends BaseTestCase
 {
 
   /**
-   * Populates the in-memory database with test data.
+   * Populate the in-memory database with test data.
+   * @param $c the application container
    */
   protected function prepareTestData($c) {
     $c->userService->addUser([
@@ -30,6 +31,17 @@ class ApiTest extends BaseTestCase
       'description' => 'test'
     ]);
     $c->groupService->addMember('test', 'lea', 'admin');
+    $c->eventService->addGroupEvent([
+      'id' => 'test-1',
+      'group_id' => 'test',
+      'name' => 'Test Event 1',
+      'description' => 'Lorem ipsum dolor sit amet consectetur, adipisicing elit.',
+      'location' => 'Dummy Place',
+      'address' => 'Dummy Address',
+      'lat' => '0',
+      'lon' => '0',
+      'date' => '2018-10-31'
+    ]);
   }
 
   // The index route should redirect to the Swagger OpenAPI documentation
@@ -83,7 +95,6 @@ class ApiTest extends BaseTestCase
     $this->assertEquals(409, $response->getStatusCode());
     $data = json_decode($response->getBody());
   }
-
 
   // PUT /user/{id} should update the user
   public function testPutUser() {
@@ -144,5 +155,28 @@ class ApiTest extends BaseTestCase
     $response = $this->runApp('DELETE', '/group/test/members/lea', null, ['user' => 'lea', 'password' => 'lea123']);
     $this->assertEquals(200, $response->getStatusCode());
   }
+
+  // GET /group/{id}/events should return an array of group members
+  public function testGetGroupEvents() {
+    $response = $this->runApp('GET', '/group/test/events');
+    $this->assertEquals(200, $response->getStatusCode());
+  }
+
+  // POST /group/{id}/event/{id} should create an event
+  public function testCreateGroupEvent() {
+    $response = $this->runApp('POST', '/group/test/event/test-2', [
+      'id' => 'test-2',
+      'group_id' => 'test',
+      'name' => 'Test Event...',
+      'description' => 'Lorem ipsum dolor sit amet consectetur, adipisicing elit.',
+      'location' => 'Dummy Place',
+      'address' => 'Dummy Address',
+      'lat' => '0',
+      'lon' => '0',
+      'date' => '2018-10-31'
+    ], ['user' => 'lea', 'password' => 'lea123']);
+    $this->assertEquals(200, $response->getStatusCode());
+  }
+
 
 }

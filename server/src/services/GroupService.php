@@ -42,13 +42,11 @@ class GroupService {
       ':group_id' => $groupId,
       ':user_id' => $userId
     ]);
-    if ($query->rowCount() === 0) {
-      // user is not a member of this group
-      // or the group does not exist
+    $rows = $query->fetchAll();
+    if (count($rows) !== 1) {
       return FALSE;
     }
-    $row = $query->fetch();
-    return $row['role'];
+    return $rows[0]['role'];
   }
 
   public function createGroup($group) {

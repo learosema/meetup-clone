@@ -16,7 +16,7 @@ class EventService {
   }
 
   public function getGroupEvent($groupId, $eventId) {
-    $query = $this->db->prepare('SELECT * FROM group_events WHERE group_id = :group_id AND event_id = :event_id');
+    $query = $this->db->prepare('SELECT * FROM group_events WHERE group_id = :group_id AND id = :event_id');
     $query->execute([
       ':group_id' => $groupId,
       ':event_id' => $eventId
@@ -24,13 +24,12 @@ class EventService {
     return ($query->fetch());
   }
 
-
   public function addGroupEvent($event) {
     $cols = ['id', 'group_id', 'name', 'description', 'location', 'address', 'lat', 'lon', 'date', 'timestamp'];
     $vals = array_map(function($col) { return ':' . $col; }, $cols);
     $strCols = implode(', ', $cols);
     $strVals = implode(', ', $vals);
-    $query = $this->db->prepare("INSERT INTO group_events ($cols) VALUES ($vals)");
+    $query = $this->db->prepare("INSERT INTO group_events ($strCols) VALUES ($strVals)");
     $query->execute([
       ':id' => $event['id'], 
       ':group_id' => $event['group_id'], 
