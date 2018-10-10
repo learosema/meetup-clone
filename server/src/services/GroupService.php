@@ -42,13 +42,11 @@ class GroupService {
       ':group_id' => $groupId,
       ':user_id' => $userId
     ]);
-    if ($query->rowCount() === 0) {
-      // user is not a member of this group
-      // or the group does not exist
+    $rows = $query->fetchAll();
+    if (count($rows) !== 1) {
       return FALSE;
     }
-    $row = $query->fetch();
-    return $row['role'];
+    return $rows[0]['role'];
   }
 
   public function createGroup($group) {
@@ -66,9 +64,9 @@ class GroupService {
       $updateQuery = [];
       $queryParams = [':id' => $group['id']];
       foreach (['name', 'description'] as $k) {
-        if ($group[$k]) {
+        if (array_key_exists($k, $group) && $group[$k]) {
           array_push($updateQuery, "`$k` = :$k");
-          $queryParams[":$k"] = $user[$k];
+          $queryParams[":$k"] = $group[$k];
         }
       }
       array_push($updateQuery, '`timestamp` = :timestamp');
@@ -88,13 +86,14 @@ class GroupService {
     $query->execute([
       ':id' => $groupId
     ]);
-    if ($query->rowCount() !== 1) {
+    if ($query->rowCount() != 1) {
       return FALSE;
     }
     $query = $this->db->prepare('DELETE FROM group_members WHERE group_id = :id');
     $query->execute([
       ':id' => $groupId
     ]);
+    return TRUE;
   }
 
   public function isUserInGroup($groupId, $userId) {
