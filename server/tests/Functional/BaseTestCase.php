@@ -8,7 +8,7 @@ use Slim\Http\Response;
 use Slim\Http\Environment;
 
 
-class BaseTestCase extends \PHPUnit_Framework_TestCase
+class BaseTestCase extends \PHPUnit\Framework\TestCase
 {
   /**
    * Use middleware when running application?
@@ -20,7 +20,7 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
 
   /**
    * Override this function to provide test data
-   * 
+   *
    * @param $c DI container of the Slim App
    */
   protected function prepareTestData($c) {
@@ -44,7 +44,7 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
     if ($authorization) {
       $env['HTTP_AUTHORIZATION'] = 'Basic ' . base64_encode($authorization['user'] . ':' . $authorization['password']);
     }
-    
+
     // Create a mock environment for testing with
     $environment = Environment::mock($env);
 

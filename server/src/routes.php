@@ -25,7 +25,7 @@ $app->get('/', function(Request $request, Response $response) {
   return $response->withStatus(301)->withHeader('Location', '/docs/');
 });
 
-// GET /auth 
+// GET /auth
 // Test route for authenticated requests, returns identity object
 $app->get('/auth', function(Request $request, Response $response) {
   return $response->withJson($this->identity);
@@ -33,7 +33,7 @@ $app->get('/auth', function(Request $request, Response $response) {
 
 // GET /users
 // Get all users
-$app->get('/users', function(Request $request, Response $response) {  
+$app->get('/users', function(Request $request, Response $response) {
   return $response->withJson($this->userService->getUsers());
 });
 

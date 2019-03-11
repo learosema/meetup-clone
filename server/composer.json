@@ -17,11 +17,11 @@
         "webonyx/graphql-php": "^0.12.6"
     },
     "require-dev": {
-        "phpunit/phpunit": ">=4.8 < 6.0"
+        "phpunit/phpunit": "^7.5"
     },
     "autoload-dev": {
         "psr-4": {
-            "Middleware\\": "src/middleware", 
+            "Middleware\\": "src/middleware",
             "Services\\": "src/services",
             "Models\\": "src/models",
             "Tests\\": "tests/"
