@@ -1,6 +1,6 @@
 get:
   summary: Get user information
-  tags: 
+  tags:
     - users
   parameters:
     - name: id
@@ -15,7 +15,7 @@ get:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/User'
+            $ref: '../schemas/user.yaml'
 delete:
   security:
     - basicAuth: []
@@ -50,7 +50,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: '#/components/schemas/User'
+          $ref: '../schemas/user.yaml'
   responses:
     '200':
       description: OK
@@ -73,10 +73,10 @@ put:
     content:
       application/x-www-form-urlencoded:
         schema:
-          $ref: '#/components/schemas/User'
+          $ref: '../schemas/user.yaml'
       application/json:
         schema:
-          $ref: '#/components/schemas/User'
+          $ref: '../schemas/user.yaml'
   responses:
     '200':
       description: OK

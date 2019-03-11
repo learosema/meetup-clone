@@ -16,7 +16,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: '#/components/schemas/Group'
+          $ref: '../schemas/group.yaml'
   tags:
     - groups
 put:

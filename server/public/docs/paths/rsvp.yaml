@@ -2,7 +2,7 @@ post:
   security:
     - basicAuth: []
   summary: Submit RSVP
-  tags: 
+  tags:
     - group-events
   parameters:
   - name: id

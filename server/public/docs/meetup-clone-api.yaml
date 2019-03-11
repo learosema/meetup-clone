@@ -25,9 +25,9 @@ components:
     Event:
       $ref: 'schemas/event.yaml'
     Events:
-      $ref: 'schemas/events.yaml'       
+      $ref: 'schemas/events.yaml'
     Rsvp:
-      $ref: 'schemas/rsvp.yaml'  
+      $ref: 'schemas/rsvp.yaml'
     Response:
       required:
         - response
